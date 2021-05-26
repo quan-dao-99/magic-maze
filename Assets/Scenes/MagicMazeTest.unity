@@ -531,9 +531,6 @@ MonoBehaviour:
   wallLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  groundLayerMask:
-    serializedVersion: 2
-    m_Bits: 128
   movementCardSettings: {fileID: 11400000, guid: 784ce25b557e9467fa59440009d4e42f, type: 2}
   tileStackController: {fileID: 1927040955}
 --- !u!4 &1232846522
@@ -615,6 +612,36 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1456379040
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1456379041}
+  m_Layer: 0
+  m_Name: TestGridCellWorldPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1456379041
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1456379040}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1496076702
 GameObject:
@@ -705,6 +732,9 @@ MonoBehaviour:
   characterMovementController: {fileID: 1232846521}
   allCharacters:
   - {fileID: 4762214255463703095, guid: a86cdf4c6e5164257be17e77e8dc0258, type: 3}
+  - {fileID: 7171057932947592735, guid: 21fac494cbd804f34a0a7e174623c06e, type: 3}
+  - {fileID: 4573535164153732983, guid: 039570f009d3e46308baa417da5da522, type: 3}
+  - {fileID: 5791295880336435600, guid: 08bba6eed49294b8ea67c5798c6abeda, type: 3}
   startingTile: {fileID: 7715387498912098976, guid: 92eb24a78f8aa43199f848280c9c8f61, type: 3}
   startTilePositionTransform: {fileID: 1944541823}
 --- !u!1 &1577650514
@@ -973,10 +1003,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allTiles:
-  - {fileID: 7358990481311655954, guid: d5232bea224e94eadb105f0b7b6f3459, type: 3}
   - {fileID: 7358990481311655954, guid: 87dc6842d46a9435f95251883963f875, type: 3}
   - {fileID: 7358990481311655954, guid: f9e840c6fbc0e41cf84505ea6c506d01, type: 3}
   - {fileID: 7358990481311655954, guid: c372513329eb2426aa6a504e6f74b078, type: 3}
+  - {fileID: 7358990481311655954, guid: d5232bea224e94eadb105f0b7b6f3459, type: 3}
+  - {fileID: 7358990481311655954, guid: 4270faec01f6449f1895e8d3bbb57163, type: 3}
+  - {fileID: 7358990481311655954, guid: 97463ea9bba0544dabd071bb02d63445, type: 3}
+  - {fileID: 7358990481311655954, guid: 1a038b3d8e77949c6b7e4c2076fdc2fe, type: 3}
+  - {fileID: 7358990481311655954, guid: bf6255ec300714abb9117252d49b8e8a, type: 3}
   tileStackSpawnPosition: {fileID: 98058675}
 --- !u!4 &1927040956
 Transform:

@@ -21,7 +21,8 @@ namespace LiftStudio
 
         public void SetupGrid()
         {
-            _originPosition = tileVisualTransform.position + OwnTransform.rotation * new Vector3(-2, 0, -2);
+            _originPosition = tileVisualTransform.position +
+                              OwnTransform.rotation * tileVisualTransform.localRotation * new Vector3(-2, 0, -2);
             Grid = new CustomGrid<GridCell>(OwnTransform, tileVisualTransform, _originPosition, Width, Height, CellSize,
                 (grid, x, y) =>
                 {
@@ -43,7 +44,8 @@ namespace LiftStudio
 
         private Vector3 GetCellWorldPosition(int x, int y)
         {
-            return OwnTransform.rotation * (new Vector3(x, 0, y) * CellSize) + _originPosition;
+            return OwnTransform.rotation * tileVisualTransform.localRotation * (new Vector3(x, 0, y) * CellSize) +
+                   _originPosition;
         }
     }
 }

@@ -6,6 +6,7 @@ namespace LiftStudio
     public class CustomGrid<T>
     {
         private readonly Transform _containerTransform;
+        private readonly Transform _visualTransform;
         private readonly Vector3 _originPosition;
         private readonly T[,] _grid;
         private readonly int _width;
@@ -18,6 +19,7 @@ namespace LiftStudio
             Func<CustomGrid<T>, int, int, T> createCellObject)
         {
             _containerTransform = containerTransform;
+            _visualTransform = visualTransform;
             _originPosition = originPosition;
             _width = width;
             _height = height;
@@ -69,7 +71,8 @@ namespace LiftStudio
             if (x < 0 || y < 0) return Vector3.negativeInfinity;
 
             return FormatWorldPosition(GetCellWorldPosition(x, y) +
-                                       _containerTransform.rotation * new Vector3(_cellSize / 2f, 0, _cellSize / 2f));
+                                       _containerTransform.rotation * _visualTransform.localRotation *
+                                       new Vector3(_cellSize / 2f, 0, _cellSize / 2f));
         }
 
         public Vector3 GetCellCenterWorldPosition(int x, int y)
@@ -77,13 +80,15 @@ namespace LiftStudio
             if (x < 0 || y < 0) return Vector3.negativeInfinity;
 
             return FormatWorldPosition(GetCellWorldPosition(x, y) +
-                                       _containerTransform.rotation * new Vector3(_cellSize / 2f, 0, _cellSize / 2f));
+                                       _containerTransform.rotation * _visualTransform.localRotation *
+                                       new Vector3(_cellSize / 2f, 0, _cellSize / 2f));
         }
 
         private Vector3 GetCellWorldPosition(int x, int y)
         {
-            return FormatWorldPosition(_containerTransform.rotation * (new Vector3(x, 0, y) * _cellSize) +
-                                       _originPosition);
+            return FormatWorldPosition(
+                _containerTransform.rotation * _visualTransform.localRotation * (new Vector3(x, 0, y) * _cellSize) +
+                _originPosition);
         }
 
         private Vector3 GetCellWorldPosition(Vector3 worldPosition)
@@ -98,9 +103,14 @@ namespace LiftStudio
             if (!_bounds.Contains(worldPosition)) return (-1, -1);
 
             var containerRotation = _containerTransform.rotation;
+            var visualLocalRotation = _visualTransform.localRotation;
             var (x, y) = (
-                Mathf.FloorToInt(Mathf.Abs((containerRotation * (worldPosition - _originPosition)).x) / _cellSize),
-                Mathf.FloorToInt(Mathf.Abs((containerRotation * (worldPosition - _originPosition)).z) / _cellSize));
+                Mathf.FloorToInt(
+                    Mathf.Abs((containerRotation * visualLocalRotation * (worldPosition - _originPosition)).x) /
+                    _cellSize),
+                Mathf.FloorToInt(
+                    Mathf.Abs((containerRotation * visualLocalRotation * (worldPosition - _originPosition)).z) /
+                    _cellSize));
             if (x < 0 || y < 0 || x >= _width || y >= _height) return (-1, -1);
 
             return (x, y);
