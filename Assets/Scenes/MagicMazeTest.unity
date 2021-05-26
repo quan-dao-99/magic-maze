@@ -1003,10 +1003,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   allTiles:
-  - {fileID: 7358990481311655954, guid: d5232bea224e94eadb105f0b7b6f3459, type: 3}
   - {fileID: 7358990481311655954, guid: 87dc6842d46a9435f95251883963f875, type: 3}
   - {fileID: 7358990481311655954, guid: f9e840c6fbc0e41cf84505ea6c506d01, type: 3}
   - {fileID: 7358990481311655954, guid: c372513329eb2426aa6a504e6f74b078, type: 3}
+  - {fileID: 7358990481311655954, guid: d5232bea224e94eadb105f0b7b6f3459, type: 3}
+  - {fileID: 7358990481311655954, guid: 4270faec01f6449f1895e8d3bbb57163, type: 3}
+  - {fileID: 7358990481311655954, guid: 97463ea9bba0544dabd071bb02d63445, type: 3}
+  - {fileID: 7358990481311655954, guid: 1a038b3d8e77949c6b7e4c2076fdc2fe, type: 3}
+  - {fileID: 7358990481311655954, guid: bf6255ec300714abb9117252d49b8e8a, type: 3}
   tileStackSpawnPosition: {fileID: 98058675}
 --- !u!4 &1927040956
 Transform:
