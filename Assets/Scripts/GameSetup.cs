@@ -21,7 +21,7 @@ namespace LiftStudio
                 var characterPosition = tile.GetRandomCharacterSpawnPosition().position;
                 var spawnedCharacter =
                     Instantiate(character, characterPosition, Quaternion.identity);
-                characterMovementController.CharacterOnTileDict[spawnedCharacter] = tile;
+                characterMovementController.CharacterOnTileDictionary[spawnedCharacter] = tile;
                 tile.Grid.GetGridCellObject(characterPosition).SetCharacter(spawnedCharacter);
             }
         }
