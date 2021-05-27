@@ -30,7 +30,7 @@ namespace LiftStudio
 
                 if (gridCellResearchPoint.targetCharacterType != pair.Key.CharacterType) continue;
 
-                if (gridCellResearchPoint.hasResearched) break;
+                if (gridCellResearchPoint.hasResearched) continue;
 
                 TilePlacer.PlaceTile(tileStackController.GameTileStacks.Pop(),
                     gridCellResearchPoint.attachPoint.position,
