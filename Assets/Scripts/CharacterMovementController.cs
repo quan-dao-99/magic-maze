@@ -78,6 +78,8 @@ namespace LiftStudio
                 var targetGridCell = placedTile.Grid.GetGridCellObject(targetPosition);
                 if (targetGridCell == null) continue;
 
+                if (targetGridCell.CharacterOnTop != null && targetGridCell != _startGridCell) return;
+
                 _targetGridCell = targetGridCell;
                 _selectedCharacter.transform.position = _targetGridCell.CenterWorldPosition;
             }
@@ -129,19 +131,27 @@ namespace LiftStudio
                 }
             }
 
+            _selectedCharacter.ToggleColliderOff();
             if (!movementDirection.Contains(normalizedDirection) ||
                 Physics.Raycast(_startGridCell.CenterWorldPosition, normalizedDirection, direction.magnitude,
-                    wallLayerMask))
+                    wallLayerMask) ||
+                Physics.Raycast(_startGridCell.CenterWorldPosition, normalizedDirection,
+                    direction.magnitude,
+                    characterLayerMask))
             {
-                _selectedCharacter.transform.position = _startGridCell.CenterWorldPosition;
+                _selectedCharacter.ToggleColliderOn();
+                MoveCharacterToTargetPosition(_startGridCell);
                 return;
             }
 
+            _selectedCharacter.ToggleColliderOn();
             MoveCharacterToTargetPosition(_targetGridCell);
         }
 
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
         {
+            targetGridCell.SetCharacter(_selectedCharacter);
+            _startGridCell.ClearCharacter();
             CharacterOnTileDict[_selectedCharacter] = targetGridCell.Tile;
             _startGridCell = targetGridCell;
             _selectedCharacter.transform.position = targetGridCell.CenterWorldPosition;
