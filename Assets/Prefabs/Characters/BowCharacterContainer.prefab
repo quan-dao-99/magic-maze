@@ -60,6 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterType: 0
+  characterCollider: {fileID: 4014475779403363161}
 --- !u!1 &3487674105910295984
 GameObject:
   m_ObjectHideFlags: 0

@@ -18,9 +18,11 @@ namespace LiftStudio
 
             foreach (var character in allCharacters)
             {
+                var characterPosition = tile.GetRandomCharacterSpawnPosition().position;
                 var spawnedCharacter =
-                    Instantiate(character, tile.GetRandomCharacterSpawnPosition().position, Quaternion.identity);
+                    Instantiate(character, characterPosition, Quaternion.identity);
                 characterMovementController.CharacterOnTileDict[spawnedCharacter] = tile;
+                tile.Grid.GetGridCellObject(characterPosition).SetCharacter(spawnedCharacter);
             }
         }
     }

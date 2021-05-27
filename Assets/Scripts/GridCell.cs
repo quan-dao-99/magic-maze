@@ -4,9 +4,8 @@ namespace LiftStudio
 {
     public class GridCell
     {
-        public Character characterOnTop;
-
         public Vector3 CenterWorldPosition => _grid.GetCellCenterWorldPosition(_x, _y);
+        public Character CharacterOnTop { get; private set; }
         public Portal Portal { get; }
         public ResearchPoint ResearchPoint { get; }
         public Elevator Elevator { get; }
@@ -26,6 +25,16 @@ namespace LiftStudio
             Elevator = elevator;
             ResearchPoint = researchPoint;
             Tile = tile;
+        }
+
+        public void SetCharacter(Character targetCharacter)
+        {
+            CharacterOnTop = targetCharacter;
+        }
+
+        public void ClearCharacter()
+        {
+            CharacterOnTop = null;
         }
     }
 }
