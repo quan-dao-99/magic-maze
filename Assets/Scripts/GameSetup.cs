@@ -5,7 +5,7 @@ namespace LiftStudio
 {
     public class GameSetup : MonoBehaviour
     {
-        [SerializeField] private CharacterMovementController characterMovementController;
+        [SerializeField] private Game gameHandler;
         [SerializeField] private List<Character> allCharacters;
         [SerializeField] private StartingTile startingTile;
         [SerializeField] private Transform startTilePositionTransform;
@@ -21,7 +21,7 @@ namespace LiftStudio
                 var characterPosition = tile.GetRandomCharacterSpawnPosition().position;
                 var spawnedCharacter =
                     Instantiate(character, characterPosition, Quaternion.identity);
-                characterMovementController.CharacterOnTileDictionary[spawnedCharacter] = tile;
+                gameHandler.CharacterOnTileDictionary[spawnedCharacter] = tile;
                 tile.Grid.GetGridCellObject(characterPosition).SetCharacter(spawnedCharacter);
             }
         }

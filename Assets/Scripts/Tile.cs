@@ -10,6 +10,7 @@ namespace LiftStudio
         [SerializeField] private List<Elevator> elevators;
         [SerializeField] private List<ResearchPoint> researchTiles;
         [SerializeField] private List<ExitSetup> exitSetups;
+        [SerializeField] private PickupSetup pickupSetup;
 
         public CustomGrid<GridCell> Grid { get; private set; }
 
@@ -46,7 +47,13 @@ namespace LiftStudio
                         }
                     }
 
-                    return new GridCell(grid, x, y, targetPortal, targetElevator, targetResearchPoint, exitLists, this);
+                    var isPickupTile = pickupSetup.gridPosition.x == x && pickupSetup.gridPosition.y == y;
+                    var pickup = isPickupTile
+                        ? new Pickup {targetCharacterType = pickupSetup.targetCharacterType}
+                        : null;
+
+                    return new GridCell(grid, x, y, targetPortal, targetElevator, targetResearchPoint, exitLists,
+                        pickup, this);
                 });
         }
 

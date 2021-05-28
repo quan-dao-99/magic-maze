@@ -11,6 +11,7 @@ namespace LiftStudio
         public Elevator Elevator { get; }
         public ResearchPoint ResearchPoint { get; }
         public List<Exit> Exits { get; }
+        public Pickup Pickup { get; }
         public Tile Tile { get; }
 
         private readonly CustomGrid<GridCell> _grid;
@@ -18,7 +19,7 @@ namespace LiftStudio
         private readonly int _y;
 
         public GridCell(CustomGrid<GridCell> grid, int x, int y, Portal portal, Elevator elevator,
-            ResearchPoint researchPoint, List<Exit> exits, Tile tile)
+            ResearchPoint researchPoint, List<Exit> exits, Pickup pickup, Tile tile)
         {
             _grid = grid;
             _x = x;
@@ -28,6 +29,7 @@ namespace LiftStudio
             ResearchPoint = researchPoint;
             Exits = exits;
             Tile = tile;
+            Pickup = pickup;
         }
 
         public void SetCharacter(Character targetCharacter)
