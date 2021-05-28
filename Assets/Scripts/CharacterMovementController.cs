@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,35 +9,13 @@ namespace LiftStudio
         [SerializeField] private LayerMask characterLayerMask;
         [SerializeField] private LayerMask wallLayerMask;
         [SerializeField] private MovementCardSettings movementCardSettings;
-        [SerializeField] private TileStackController tileStackController;
-        [SerializeField] private Transform outOfBoardTransform;
-
-        public Dictionary<Character, Tile> CharacterOnTileDictionary { get; } = new Dictionary<Character, Tile>();
+        [SerializeField] private Game gameHandler;
 
         private Vector3 _mouseStartPosition;
         private Character _selectedCharacter;
         private GridCell _startGridCell;
         private GridCell _targetGridCell;
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
-
-        public void HandleTakeNewTile()
-        {
-            foreach (var pair in CharacterOnTileDictionary)
-            {
-                var characterGridCell = pair.Value.Grid.GetGridCellObject(pair.Key.transform.position);
-                var gridCellResearchPoint = characterGridCell.ResearchPoint;
-                if (gridCellResearchPoint == null) continue;
-
-                if (gridCellResearchPoint.targetCharacterType != pair.Key.CharacterType) continue;
-
-                if (gridCellResearchPoint.hasResearched) continue;
-
-                TilePlacer.PlaceTile(tileStackController.GameTileStacks.Pop(),
-                    gridCellResearchPoint.attachPoint.position,
-                    Quaternion.LookRotation(gridCellResearchPoint.attachPoint.forward));
-                gridCellResearchPoint.hasResearched = true;
-            }
-        }
 
         private void Update()
         {
@@ -81,6 +58,8 @@ namespace LiftStudio
 
                 if (targetGridCell.CharacterOnTop != null && targetGridCell != _startGridCell) return;
 
+                if (targetGridCell.Exits != null && !gameHandler.HasCharactersBeenOnPickupCells) return;
+
                 _targetGridCell = targetGridCell;
                 _selectedCharacter.transform.position = _targetGridCell.CenterWorldPosition;
             }
@@ -94,7 +73,7 @@ namespace LiftStudio
             _plane.Raycast(ray, out var enter);
             _mouseStartPosition = ray.GetPoint(enter);
             _selectedCharacter = characterHitInfo.transform.GetComponent<Character>();
-            var boardTile = CharacterOnTileDictionary[_selectedCharacter];
+            var boardTile = gameHandler.CharacterOnTileDictionary[_selectedCharacter];
             _startGridCell = boardTile.Grid.GetGridCellObject(_selectedCharacter.transform.position);
         }
 
@@ -146,23 +125,28 @@ namespace LiftStudio
             }
 
             _selectedCharacter.ToggleColliderOn();
-            if (_targetGridCell.Exits == null)
+
+            if (_targetGridCell.Exits != null &&
+                _targetGridCell.Exits.Exists(exit => exit.targetCharacterType == _selectedCharacter.CharacterType))
             {
-                MoveCharacterToTargetPosition(_targetGridCell);
+                TakeCharacterOutOfBoard(_selectedCharacter);
                 return;
             }
 
-            if (_targetGridCell.Exits.Exists(exit => exit.targetCharacterType == _selectedCharacter.CharacterType))
+            if (_targetGridCell.Pickup != null &&
+                _targetGridCell.Pickup.targetCharacterType == _selectedCharacter.CharacterType)
             {
-                TakeCharacterOutOfBoard(_selectedCharacter);
+                gameHandler.NotifyCharacterPlacedOnPickupCell();
             }
+
+            MoveCharacterToTargetPosition(_targetGridCell);
         }
 
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
         {
             targetGridCell.SetCharacter(_selectedCharacter);
             _startGridCell.ClearCharacter();
-            CharacterOnTileDictionary[_selectedCharacter] = targetGridCell.Tile;
+            gameHandler.CharacterOnTileDictionary[_selectedCharacter] = targetGridCell.Tile;
             _startGridCell = targetGridCell;
             _selectedCharacter.transform.position = targetGridCell.CenterWorldPosition;
             _selectedCharacter = null;
@@ -172,9 +156,9 @@ namespace LiftStudio
         private void TakeCharacterOutOfBoard(Character targetCharacter)
         {
             _startGridCell.ClearCharacter();
-            CharacterOnTileDictionary[targetCharacter] = null;
+            gameHandler.CharacterOnTileDictionary[targetCharacter] = null;
             targetCharacter.ToggleColliderOff();
-            targetCharacter.transform.position = outOfBoardTransform.position;
+            targetCharacter.transform.position = gameHandler.OutOfBoardTransform.position;
             _startGridCell = null;
             _selectedCharacter = null;
             _targetGridCell = null;
