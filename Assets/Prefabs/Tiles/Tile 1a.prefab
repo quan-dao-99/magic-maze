@@ -1542,7 +1542,7 @@ GameObject:
   - component: {fileID: 3964454005184452135}
   - component: {fileID: 3964454005184452129}
   - component: {fileID: 3964454005184452128}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TileVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1965,9 +1965,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileVisualTransform: {fileID: 3964454005184452135}
-  elevators:
-  - firstGridPosition: {x: 0, y: 1}
-    secondGridPosition: {x: 1, y: 0}
   portals:
   - targetCharacterType: 0
     gridPosition: {x: 0, y: 3}
@@ -1977,6 +1974,9 @@ MonoBehaviour:
     gridPosition: {x: 2, y: 0}
   - targetCharacterType: 2
     gridPosition: {x: 3, y: 0}
+  elevators:
+  - firstGridPosition: {x: 0, y: 1}
+    secondGridPosition: {x: 1, y: 0}
   researchTiles:
   - targetCharacterType: 3
     gridPosition: {x: 3, y: 1}
@@ -1994,6 +1994,10 @@ MonoBehaviour:
     gridPosition: {x: 2, y: 3}
     attachPoint: {fileID: 3964454005082343228}
     hasResearched: 0
+  exitSetups: []
+  pickupSetup:
+    targetCharacterType: 0
+    gridPosition: {x: 0, y: 0}
   characterSpawnPositions:
   - {fileID: 2109987341340401768}
   - {fileID: 2327530699898337999}
