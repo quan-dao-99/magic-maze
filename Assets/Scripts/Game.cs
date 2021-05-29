@@ -7,6 +7,7 @@ namespace LiftStudio
     {
         [SerializeField] private TileStackController tileStackController;
         [SerializeField] private Transform outOfBoardTransform;
+        [SerializeField] private LayerMask groundLayerMask;
 
         public Transform OutOfBoardTransform => outOfBoardTransform;
 
@@ -21,14 +22,24 @@ namespace LiftStudio
                 var gridCellResearchPoint = characterGridCell.ResearchPoint;
                 if (gridCellResearchPoint == null) continue;
 
-                if (gridCellResearchPoint.targetCharacterType != pair.Key.CharacterType) continue;
-
                 if (gridCellResearchPoint.hasResearched) continue;
 
+                var attachPoint = gridCellResearchPoint.attachPoint;
+                if (Physics.CheckBox(
+                    attachPoint.position + attachPoint.forward * 2f, Vector3.one,
+                    Quaternion.identity, groundLayerMask))
+                {
+                    gridCellResearchPoint.hasResearched = true;
+                    continue;
+                }
+
+                if (gridCellResearchPoint.targetCharacterType != pair.Key.CharacterType) continue;
+
                 TilePlacer.PlaceTile(tileStackController.GameTileStacks.Pop(),
-                    gridCellResearchPoint.attachPoint.position,
-                    Quaternion.LookRotation(gridCellResearchPoint.attachPoint.forward));
+                    attachPoint.position,
+                    Quaternion.LookRotation(attachPoint.forward));
                 gridCellResearchPoint.hasResearched = true;
+                Physics.SyncTransforms();
             }
         }
 

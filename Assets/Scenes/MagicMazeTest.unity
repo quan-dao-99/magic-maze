@@ -526,6 +526,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileStackController: {fileID: 1927040955}
   outOfBoardTransform: {fileID: 1131815170}
+  groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!4 &1008081579
 Transform:
   m_ObjectHideFlags: 0

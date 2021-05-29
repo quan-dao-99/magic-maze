@@ -888,7 +888,7 @@ GameObject:
   - component: {fileID: 1499477291975839629}
   - component: {fileID: 3289427146357542389}
   - component: {fileID: 5817646837482685188}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TileVisual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3262,8 +3262,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3206076384851586875}
-  - component: {fileID: 7358990481311655954}
   - component: {fileID: 2652162805857111119}
+  - component: {fileID: 7358990481311655954}
   m_Layer: 7
   m_Name: Tile 5
   m_TagString: Untagged
@@ -3286,6 +3286,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &2652162805857111119
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8587979205355786631}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 10, y: 0.1, z: 10}
+  m_Center: {x: 1.25, y: 0, z: 5}
 --- !u!114 &7358990481311655954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3299,10 +3312,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileVisualTransform: {fileID: 1499477291975839629}
-  elevators: []
   portals:
   - targetCharacterType: 2
     gridPosition: {x: 3, y: 2}
+  elevators: []
   researchTiles:
   - targetCharacterType: 3
     gridPosition: {x: 1, y: 0}
@@ -3316,19 +3329,10 @@ MonoBehaviour:
     gridPosition: {x: 0, y: 2}
     attachPoint: {fileID: 7283355962610269025}
     hasResearched: 0
---- !u!65 &2652162805857111119
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8587979205355786631}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 10, y: 0.02, z: 10}
-  m_Center: {x: 1.25, y: 0, z: 5}
+  exitSetups: []
+  pickupSetup:
+    targetCharacterType: 0
+    gridPosition: {x: 0, y: 0}
 --- !u!1 &8717013426368697134
 GameObject:
   m_ObjectHideFlags: 0
