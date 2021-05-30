@@ -26,7 +26,7 @@ namespace LiftStudio
 
                 var attachPoint = gridCellResearchPoint.attachPoint;
                 if (Physics.CheckBox(
-                    attachPoint.position + attachPoint.forward * 2f, Vector3.one,
+                    attachPoint.position + attachPoint.forward * 2f, Vector3.one / 2,
                     Quaternion.identity, groundLayerMask))
                 {
                     gridCellResearchPoint.hasResearched = true;
