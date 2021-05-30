@@ -91,7 +91,7 @@ namespace LiftStudio
                             _startGridCell.CenterWorldPosition;
             var normalizedDirection = direction.normalized;
             var movementDirection = movementCardSettings.GetAllPossibleMovementVector();
-            if (movementCardSettings.canUsePortal)
+            if (movementCardSettings.canUsePortal && !gameHandler.HasCharactersBeenOnPickupCells)
             {
                 var targetPortal = _targetGridCell.Portal;
                 if (targetPortal != null && targetPortal.targetCharacterType == _selectedCharacter.CharacterType)
