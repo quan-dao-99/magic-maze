@@ -7,7 +7,7 @@ namespace LiftStudio
     public class PickupSetup
     {
         public CharacterType targetCharacterType;
-        public Vector2Int gridPosition;
+        public Vector2Int gridPosition = new Vector2Int(-1, -1);
     }
 
     public class Pickup
