@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace LiftStudio
+namespace LiftStudio.Editor
 {
     [CustomPropertyDrawer(typeof(EnumFlagAttribute))]
     public class EnumFlagAttributePropertyDrawer : PropertyDrawer

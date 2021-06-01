@@ -12,6 +12,7 @@ namespace LiftStudio
         public ResearchPoint ResearchPoint { get; }
         public List<Exit> Exits { get; }
         public Pickup Pickup { get; }
+        public Hourglass Hourglass { get; }
         public Tile Tile { get; }
 
         private readonly CustomGrid<GridCell> _grid;
@@ -19,7 +20,7 @@ namespace LiftStudio
         private readonly int _y;
 
         public GridCell(CustomGrid<GridCell> grid, int x, int y, Portal portal, Elevator elevator,
-            ResearchPoint researchPoint, List<Exit> exits, Pickup pickup, Tile tile)
+            ResearchPoint researchPoint, List<Exit> exits, Pickup pickup, Hourglass hourglass, Tile tile)
         {
             _grid = grid;
             _x = x;
@@ -28,8 +29,9 @@ namespace LiftStudio
             Elevator = elevator;
             ResearchPoint = researchPoint;
             Exits = exits;
-            Tile = tile;
             Pickup = pickup;
+            Hourglass = hourglass;
+            Tile = tile;
         }
 
         public void SetCharacter(Character targetCharacter)
@@ -40,6 +42,12 @@ namespace LiftStudio
         public void ClearCharacter()
         {
             CharacterOnTop = null;
+        }
+
+        public void UseHourglass()
+        {
+            Hourglass.isAvailable = false;
+            Hourglass.usedMarker.SetActive(true);
         }
     }
 }

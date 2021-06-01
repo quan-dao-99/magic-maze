@@ -11,6 +11,7 @@ namespace LiftStudio
         [SerializeField] private List<ResearchPoint> researchTiles;
         [SerializeField] private List<ExitSetup> exitSetups;
         [SerializeField] private PickupSetup pickupSetup;
+        [SerializeField] private HourglassSetup hourglassSetup;
 
         public CustomGrid<GridCell> Grid { get; private set; }
 
@@ -51,9 +52,10 @@ namespace LiftStudio
                     var pickup = isPickupTile
                         ? new Pickup {targetCharacterType = pickupSetup.targetCharacterType}
                         : null;
-
+                    var isHourglass = hourglassSetup.gridPosition.x == x && hourglassSetup.gridPosition.y == y;
+                    var hourglass = isHourglass ? new Hourglass(hourglassSetup.usedMarker) : null;
                     return new GridCell(grid, x, y, targetPortal, targetElevator, targetResearchPoint, exitLists,
-                        pickup, this);
+                        pickup, hourglass, this);
                 });
         }
 

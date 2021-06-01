@@ -10,6 +10,7 @@ namespace LiftStudio
         [SerializeField] private LayerMask wallLayerMask;
         [SerializeField] private MovementCardSettings movementCardSettings;
         [SerializeField] private Game gameHandler;
+        [SerializeField] private Timer timer;
 
         private Vector3 _mouseStartPosition;
         private Character _selectedCharacter;
@@ -137,6 +138,11 @@ namespace LiftStudio
                 _targetGridCell.Pickup.targetCharacterType == _selectedCharacter.CharacterType)
             {
                 gameHandler.NotifyCharacterPlacedOnPickupCell();
+            }
+            else if (_targetGridCell.Hourglass is {isAvailable: true})
+            {
+                _targetGridCell.UseHourglass();
+                timer.FlipHourglassTimer();
             }
 
             MoveCharacterToTargetPosition(_targetGridCell);

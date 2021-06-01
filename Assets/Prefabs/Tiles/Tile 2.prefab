@@ -3266,7 +3266,10 @@ MonoBehaviour:
     gridPosition: {x: 3, y: 3}
   pickupSetup:
     targetCharacterType: 0
+    gridPosition: {x: -1, y: -1}
+  hourglassSetup:
     gridPosition: {x: 0, y: 0}
+    usedMarker: {fileID: 0}
 --- !u!1 &8717013426368697134
 GameObject:
   m_ObjectHideFlags: 0
