@@ -18,7 +18,8 @@ namespace LiftStudio
             {
                 var randomTileIndex = Random.Range(0, allTilesCopy.Count);
                 nextTileVerticalPosition.y += 0.5f;
-                var tile = Instantiate(allTilesCopy[randomTileIndex], nextTileVerticalPosition, Quaternion.identity,
+                var tile = Instantiate(allTilesCopy[randomTileIndex], nextTileVerticalPosition,
+                    Quaternion.Euler(180, 0, 0),
                     tileStackSpawnPosition);
                 GameTileStacks.Push(tile);
                 allTilesCopy.RemoveAt(randomTileIndex);
