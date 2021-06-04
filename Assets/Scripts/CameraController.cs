@@ -1,82 +1,43 @@
+using System;
+using Cinemachine;
 using UnityEngine;
 
 namespace LiftStudio
 {
     public class CameraController : MonoBehaviour
     {
-        [SerializeField] private Camera gameCamera;
+        [SerializeField] private Collider limitCollider;
+        [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
         [Space] [SerializeField] private float normalSpeed;
         [SerializeField] private float fastSpeed;
         [SerializeField] private float movementTime;
         [SerializeField] private float rotationAmount;
-        [SerializeField] private Transform cameraTransform;
         [SerializeField] private Vector3 zoomAmount;
 
         private float _movementSpeed;
+        private Bounds _colliderBounds;
         private Vector3 _newPosition;
         private Quaternion _newRotation;
         private Vector3 _newZoom;
-        private Vector3 _dragStartPosition;
-        private Vector3 _dragCurrentPosition;
-        private Vector3 _rotateStartPosition;
-        private Vector3 _rotateCurrentPosition;
-
-        private Plane _plane = new Plane(Vector3.up, Vector3.zero);
+        private CinemachineTransposer _transposer;
 
         private Transform OwnTransform => transform;
 
         private void Awake()
         {
+            _transposer = virtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+            _colliderBounds = limitCollider.bounds;
             _newPosition = OwnTransform.position;
             _newRotation = OwnTransform.rotation;
-            _newZoom = cameraTransform.localPosition;
+            _newZoom = _transposer.m_FollowOffset;
         }
 
         private void Update()
         {
-            // HandleMouseInput();
-
             HandleMovementInput();
 
             HandleCameraZoom();
-        }
-
-        private void HandleMouseInput()
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                var ray = gameCamera.ScreenPointToRay(Input.mousePosition);
-                if (_plane.Raycast(ray, out var entry))
-                {
-                    _dragStartPosition = ray.GetPoint(entry);
-                }
-            }
-            else if (Input.GetMouseButton(0))
-            {
-                var ray = gameCamera.ScreenPointToRay(Input.mousePosition);
-                if (_plane.Raycast(ray, out var entry))
-                {
-                    _dragCurrentPosition = ray.GetPoint(entry);
-
-                    _newPosition = OwnTransform.position + _dragStartPosition - _dragCurrentPosition;
-                }
-            }
-
-            if (Input.GetMouseButtonDown(1))
-            {
-                _rotateStartPosition = Input.mousePosition;
-            }
-            else if (Input.GetMouseButton(1))
-            {
-                _rotateCurrentPosition = Input.mousePosition;
-
-                var difference = _rotateStartPosition - _rotateCurrentPosition;
-
-                _rotateStartPosition = _rotateCurrentPosition;
-
-                _newRotation *= Quaternion.Euler(Vector3.up * (-difference.x / 5f));
-            }
         }
 
         private void HandleMovementInput()
@@ -93,23 +54,6 @@ namespace LiftStudio
         {
             _movementSpeed = Input.GetKey(KeyCode.LeftShift) ? fastSpeed : normalSpeed;
 
-            // if (Input.mousePosition.x > Screen.width - 20f || Input.GetAxisRaw("Horizontal") > 0f)
-            // {
-            //     _newPosition += OwnTransform.right * (Time.deltaTime * _movementSpeed);
-            // }
-            // else if (Input.mousePosition.x < 20f || Input.GetAxisRaw("Horizontal") < 0f)
-            // {
-            //     _newPosition += -OwnTransform.right * (Time.deltaTime * _movementSpeed);
-            // }
-            //
-            // if (Input.mousePosition.y > Screen.height - 20f || Input.GetAxisRaw("Vertical") > 0f)
-            // {
-            //     _newPosition += OwnTransform.forward * (Time.deltaTime * _movementSpeed);
-            // }
-            // else if (Input.mousePosition.y < 20f || Input.GetAxisRaw("Vertical") < 0f)
-            // {
-            //     _newPosition -= OwnTransform.forward * (Time.deltaTime * _movementSpeed);
-            // }
             if (Input.GetAxisRaw("Horizontal") > 0f)
             {
                 _newPosition += OwnTransform.right * (Time.deltaTime * _movementSpeed);
@@ -127,6 +71,9 @@ namespace LiftStudio
             {
                 _newPosition -= OwnTransform.forward * (Time.deltaTime * _movementSpeed);
             }
+
+            _newPosition.x = Mathf.Clamp(_newPosition.x, _colliderBounds.min.x, _colliderBounds.max.x);
+            _newPosition.z = Mathf.Clamp(_newPosition.z, _colliderBounds.min.z, _colliderBounds.max.z);
         }
 
         private void HandleCameraRotation()
@@ -145,9 +92,13 @@ namespace LiftStudio
         {
             if (Input.mouseScrollDelta.y == 0f) return;
 
-            _newZoom += zoomAmount * Mathf.Sign(Input.mouseScrollDelta.y);
-            cameraTransform.localPosition =
-                Vector3.Lerp(cameraTransform.localPosition, _newZoom, Time.deltaTime * movementTime);
+            var scrollDirection = Mathf.Sign(Input.mouseScrollDelta.y);
+            var forwardRelation = Vector3.Dot(virtualCamera.transform.forward, OwnTransform.forward);
+            if (forwardRelation <= 0.2f && forwardRelation >= -0.2f && Math.Abs(scrollDirection + 1) < 0.001f) return;
+
+            _newZoom += zoomAmount * scrollDirection;
+            _transposer.m_FollowOffset =
+                Vector3.Lerp(_transposer.m_FollowOffset, _newZoom, Time.deltaTime * movementTime);
         }
     }
 }
