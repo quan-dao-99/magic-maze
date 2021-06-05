@@ -13,7 +13,6 @@ namespace LiftStudio
         [SerializeField] private float fastSpeed;
         [SerializeField] private float movementTime;
         [SerializeField] private float rotationAmount;
-        [SerializeField] private Vector3 zoomAmount;
 
         private float _movementSpeed;
         private Bounds _colliderBounds;
@@ -92,11 +91,11 @@ namespace LiftStudio
         {
             if (Input.mouseScrollDelta.y == 0f) return;
 
-            var scrollDirection = Mathf.Sign(Input.mouseScrollDelta.y);
-            var forwardRelation = Vector3.Dot(virtualCamera.transform.forward, OwnTransform.forward);
-            if (forwardRelation <= 0.2f && forwardRelation >= -0.2f && Math.Abs(scrollDirection + 1) < 0.001f) return;
-
-            _newZoom += zoomAmount * scrollDirection;
+            Debug.Log(virtualCamera.transform.forward);
+            _newZoom += virtualCamera.transform.forward * Mathf.Sign(Input.mouseScrollDelta.y);
+            Debug.Log($"Target new zoom: {_newZoom}");
+            _newZoom.y = Mathf.Clamp(_newZoom.y, _colliderBounds.min.y, _colliderBounds.max.y);
+            Debug.Log($"Fixed new zoom: {_newZoom}");
             _transposer.m_FollowOffset =
                 Vector3.Lerp(_transposer.m_FollowOffset, _newZoom, Time.deltaTime * movementTime);
         }
