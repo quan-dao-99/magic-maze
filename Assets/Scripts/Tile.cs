@@ -6,7 +6,7 @@ namespace LiftStudio
     public class Tile : MonoBehaviour
     {
         [SerializeField] private Transform tileVisualTransform;
-        [SerializeField] private List<Portal> portals;
+        [SerializeField] private List<PortalSetup> portals;
         [SerializeField] private List<Elevator> elevators;
         [SerializeField] private List<ResearchPoint> researchTiles;
         [SerializeField] private List<ExitSetup> exitSetups;
@@ -29,7 +29,14 @@ namespace LiftStudio
             Grid = new CustomGrid<GridCell>(OwnTransform, tileVisualTransform, _originPosition, Width, Height, CellSize,
                 (grid, x, y) =>
                 {
-                    var targetPortal = portals.Find(portal => portal.gridPosition.x == x && portal.gridPosition.y == y);
+                    var portalSetup = portals.Find(portal => portal.gridPosition.x == x && portal.gridPosition.y == y);
+                    var targetPortal = portalSetup != null
+                        ? new Portal
+                        {
+                            targetCharacterType = portalSetup.targetCharacterType, usedMarker = portalSetup.usedMarker,
+                            spriteRenderer = portalSetup.portalSpriteRenderer
+                        }
+                        : null;
                     var targetElevator = elevators.Find(elevator =>
                         elevator.firstGridPosition.x == x && elevator.firstGridPosition.y == y ||
                         elevator.secondGridPosition.x == x && elevator.secondGridPosition.y == y);
@@ -53,7 +60,7 @@ namespace LiftStudio
                         ? new Pickup {targetCharacterType = pickupSetup.targetCharacterType}
                         : null;
                     var isHourglass = hourglassSetup.gridPosition.x == x && hourglassSetup.gridPosition.y == y;
-                    var hourglass = isHourglass ? new Hourglass(hourglassSetup.usedMarker) : null;
+                    var hourglass = isHourglass ? new Hourglass(hourglassSetup.usedMarker, hourglassSetup.hourglassSpriteRenderer) : null;
                     return new GridCell(grid, x, y, targetPortal, targetElevator, targetResearchPoint, exitLists,
                         pickup, hourglass, this);
                 });
