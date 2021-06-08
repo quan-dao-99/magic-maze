@@ -25,6 +25,7 @@ namespace LiftStudio
         {
             _currentTime = maxTime - _currentTime;
             timerUI.UpdateTimer(_currentTime / maxTime);
+            timerUI.FlipHourglassTimer();
         }
     }
 }

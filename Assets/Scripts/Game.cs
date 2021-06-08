@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +9,8 @@ namespace LiftStudio
         [SerializeField] private TileStackController tileStackController;
         [SerializeField] private Transform outOfBoardTransform;
         [SerializeField] private LayerMask groundLayerMask;
+
+        public static event Action AllItemsPickedUp;
 
         public Transform OutOfBoardTransform => outOfBoardTransform;
 
@@ -61,6 +64,10 @@ namespace LiftStudio
             }
 
             HasCharactersBeenOnPickupCells = allCharacterOnPickupCells;
+            if (HasCharactersBeenOnPickupCells)
+            {
+                AllItemsPickedUp?.Invoke();
+            }
         }
     }
 }

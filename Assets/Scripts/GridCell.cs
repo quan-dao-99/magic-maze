@@ -32,8 +32,10 @@ namespace LiftStudio
             Pickup = pickup;
             Hourglass = hourglass;
             Tile = tile;
+            
+            Game.AllItemsPickedUp += OnAllItemsPickedUp;
         }
-
+        
         public void SetCharacter(Character targetCharacter)
         {
             CharacterOnTop = targetCharacter;
@@ -48,6 +50,19 @@ namespace LiftStudio
         {
             Hourglass.isAvailable = false;
             Hourglass.usedMarker.SetActive(true);
+            var fadedColor = Hourglass.spriteRenderer.color;
+            fadedColor.a /= 3;
+            Hourglass.spriteRenderer.color = fadedColor;
+        }
+        
+        private void OnAllItemsPickedUp()
+        {
+            if (Portal == null) return;
+            
+            Portal.usedMarker.SetActive(true);
+            var fadedColor = Portal.spriteRenderer.color;
+            fadedColor.a /= 3;
+            Portal.spriteRenderer.color = fadedColor;
         }
     }
 }
