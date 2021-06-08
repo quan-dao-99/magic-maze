@@ -32,10 +32,12 @@ namespace LiftStudio
             Pickup = pickup;
             Hourglass = hourglass;
             Tile = tile;
-            
+
+            if (Portal == null) return;
+
             Game.AllItemsPickedUp += OnAllItemsPickedUp;
         }
-        
+
         public void SetCharacter(Character targetCharacter)
         {
             CharacterOnTop = targetCharacter;
@@ -54,11 +56,9 @@ namespace LiftStudio
             fadedColor.a /= 3;
             Hourglass.spriteRenderer.color = fadedColor;
         }
-        
+
         private void OnAllItemsPickedUp()
         {
-            if (Portal == null) return;
-            
             Portal.usedMarker.SetActive(true);
             var fadedColor = Portal.spriteRenderer.color;
             fadedColor.a /= 3;
