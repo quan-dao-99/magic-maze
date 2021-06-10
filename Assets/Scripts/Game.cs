@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace LiftStudio
@@ -11,6 +12,7 @@ namespace LiftStudio
         [SerializeField] private LayerMask groundLayerMask;
 
         public static event Action AllItemsPickedUp;
+        public static event Action AllCharactersOutOfBoard;
 
         public Transform OutOfBoardTransform => outOfBoardTransform;
 
@@ -67,6 +69,16 @@ namespace LiftStudio
             if (HasCharactersBeenOnPickupCells)
             {
                 AllItemsPickedUp?.Invoke();
+            }
+        }
+
+        public void NotifyTakeCharacterOutOfBoard(Character targetCharacter)
+        {
+            CharacterOnTileDictionary[targetCharacter] = null;
+            var allCharactersOutOfBoard = CharacterOnTileDictionary.Values.All(tile => tile == null);
+            if (allCharactersOutOfBoard)
+            {
+                AllCharactersOutOfBoard?.Invoke();
             }
         }
     }

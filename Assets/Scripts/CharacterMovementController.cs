@@ -162,7 +162,7 @@ namespace LiftStudio
         private void TakeCharacterOutOfBoard(Character targetCharacter)
         {
             _startGridCell.ClearCharacter();
-            gameHandler.CharacterOnTileDictionary[targetCharacter] = null;
+            gameHandler.NotifyTakeCharacterOutOfBoard(targetCharacter);
             targetCharacter.ToggleColliderOff();
             targetCharacter.transform.position = gameHandler.OutOfBoardTransform.position;
             _startGridCell = null;
