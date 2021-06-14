@@ -3932,6 +3932,7 @@ MonoBehaviour:
     gridPosition: {x: 2, y: 0}
     usedMarker: {fileID: 7577781112931681829}
     hourglassSpriteRenderer: {fileID: 7423685060003035378}
+  pickedUpAllItemsEventChannel: {fileID: 11400000, guid: 18e845887b21b08449b06ff57f079abe, type: 2}
 --- !u!1 &8717013426368697134
 GameObject:
   m_ObjectHideFlags: 0

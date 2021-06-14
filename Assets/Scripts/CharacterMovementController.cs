@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,11 +13,18 @@ namespace LiftStudio
         [SerializeField] private Game gameHandler;
         [SerializeField] private Timer timer;
 
+        [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
+
         private Vector3 _mouseStartPosition;
         private Character _selectedCharacter;
         private GridCell _startGridCell;
         private GridCell _targetGridCell;
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
+
+        private void Awake()
+        {
+            gameEndedEventChannel.GameEnded += OnGameEnded;
+        }
 
         private void Update()
         {
@@ -168,6 +176,16 @@ namespace LiftStudio
             _startGridCell = null;
             _selectedCharacter = null;
             _targetGridCell = null;
+        }
+
+        private void OnGameEnded()
+        {
+            enabled = false;
+        }
+
+        private void OnDestroy()
+        {
+            gameEndedEventChannel.GameEnded -= OnGameEnded;
         }
     }
 }

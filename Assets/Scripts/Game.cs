@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -11,8 +10,8 @@ namespace LiftStudio
         [SerializeField] private Transform outOfBoardTransform;
         [SerializeField] private LayerMask groundLayerMask;
 
-        public static event Action AllItemsPickedUp;
-        public static event Action AllCharactersOutOfBoard;
+        [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
+        [SerializeField] private PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel;
 
         public Transform OutOfBoardTransform => outOfBoardTransform;
 
@@ -31,7 +30,7 @@ namespace LiftStudio
 
                 var attachPoint = gridCellResearchPoint.attachPoint;
                 if (Physics.CheckBox(
-                    attachPoint.position + attachPoint.forward * 2f, Vector3.one / 2,
+                    attachPoint.position + attachPoint.forward * 2f, new Vector3(1, 0, 1) / 4,
                     Quaternion.identity, groundLayerMask))
                 {
                     gridCellResearchPoint.hasResearched = true;
@@ -68,7 +67,7 @@ namespace LiftStudio
             HasCharactersBeenOnPickupCells = allCharacterOnPickupCells;
             if (HasCharactersBeenOnPickupCells)
             {
-                AllItemsPickedUp?.Invoke();
+                pickedUpAllItemsEventChannel.RaiseEvent();
             }
         }
 
@@ -78,7 +77,7 @@ namespace LiftStudio
             var allCharactersOutOfBoard = CharacterOnTileDictionary.Values.All(tile => tile == null);
             if (allCharactersOutOfBoard)
             {
-                AllCharactersOutOfBoard?.Invoke();
+                gameEndedEventChannel.RaiseEvent();
             }
         }
     }
