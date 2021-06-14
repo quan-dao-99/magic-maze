@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -12,11 +13,19 @@ namespace LiftStudio
 
         [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
         [SerializeField] private PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel;
+        [SerializeField] private QuitGameEventChannel quitGameEventChannel;
 
         public Transform OutOfBoardTransform => outOfBoardTransform;
 
         public Dictionary<Character, Tile> CharacterOnTileDictionary { get; } = new Dictionary<Character, Tile>();
         public bool HasCharactersBeenOnPickupCells { get; private set; }
+
+        private void Update()
+        {
+            if (!Input.GetKeyUp(KeyCode.Escape)) return;
+
+            quitGameEventChannel.RaiseEvent();
+        }
 
         public void HandleTakeNewTile()
         {
