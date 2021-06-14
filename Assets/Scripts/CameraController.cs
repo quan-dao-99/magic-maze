@@ -8,6 +8,8 @@ namespace LiftStudio
         [SerializeField] private Collider limitCollider;
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
+        [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
+
         [Space]
         [SerializeField] private float normalSpeed;
         [SerializeField] private float fastSpeed;
@@ -28,6 +30,8 @@ namespace LiftStudio
             _newPosition = OwnTransform.position;
             _newRotation = OwnTransform.rotation;
             _newZoom = virtualCamera.transform.position;
+
+            gameEndedEventChannel.GameEnded += OnGameEnded;
         }
 
         private void Update()
@@ -98,6 +102,16 @@ namespace LiftStudio
             _newZoom = VirtualCameraTransform.position;
             _newZoom += VirtualCameraTransform.forward * scrollDirection;
             VirtualCameraTransform.position = _newZoom;
+        }
+
+        private void OnGameEnded()
+        {
+            enabled = false;
+        }
+
+        private void OnDestroy()
+        {
+            gameEndedEventChannel.GameEnded -= OnGameEnded;
         }
     }
 }

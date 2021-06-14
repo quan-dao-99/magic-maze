@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace LiftStudio
 {
-    public class GridCell
+    public class GridCell : IDisposable
     {
         public Vector3 CenterWorldPosition => _grid.GetCellCenterWorldPosition(_x, _y);
         public Character CharacterOnTop { get; private set; }
@@ -15,12 +16,14 @@ namespace LiftStudio
         public Hourglass Hourglass { get; }
         public Tile Tile { get; }
 
+        private readonly PickedUpAllItemsEventChannel _pickedUpAllItemsEventChannel;
         private readonly CustomGrid<GridCell> _grid;
         private readonly int _x;
         private readonly int _y;
 
         public GridCell(CustomGrid<GridCell> grid, int x, int y, Portal portal, Elevator elevator,
-            ResearchPoint researchPoint, List<Exit> exits, Pickup pickup, Hourglass hourglass, Tile tile)
+            ResearchPoint researchPoint, List<Exit> exits, Pickup pickup, Hourglass hourglass,
+            PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel, Tile tile)
         {
             _grid = grid;
             _x = x;
@@ -35,7 +38,8 @@ namespace LiftStudio
 
             if (Portal == null) return;
 
-            Game.AllItemsPickedUp += OnAllItemsPickedUp;
+            _pickedUpAllItemsEventChannel = pickedUpAllItemsEventChannel;
+            pickedUpAllItemsEventChannel.AllItemsPickedUp += OnAllItemsPickedUp;
         }
 
         public void SetCharacter(Character targetCharacter)
@@ -63,6 +67,13 @@ namespace LiftStudio
             var fadedColor = Portal.spriteRenderer.color;
             fadedColor.a /= 3;
             Portal.spriteRenderer.color = fadedColor;
+        }
+
+        public void Dispose()
+        {
+            if (_pickedUpAllItemsEventChannel == null) return;
+
+            _pickedUpAllItemsEventChannel.AllItemsPickedUp -= OnAllItemsPickedUp;
         }
     }
 }

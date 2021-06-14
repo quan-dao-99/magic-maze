@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,6 +6,7 @@ namespace LiftStudio
 {
     public class Tile : MonoBehaviour
     {
+        [SerializeField] private PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel;
         [SerializeField] private Transform tileVisualTransform;
         [SerializeField] private List<PortalSetup> portals;
         [SerializeField] private List<Elevator> elevators;
@@ -60,22 +62,17 @@ namespace LiftStudio
                         ? new Pickup {targetCharacterType = pickupSetup.targetCharacterType}
                         : null;
                     var isHourglass = hourglassSetup.gridPosition.x == x && hourglassSetup.gridPosition.y == y;
-                    var hourglass = isHourglass ? new Hourglass(hourglassSetup.usedMarker, hourglassSetup.hourglassSpriteRenderer) : null;
+                    var hourglass = isHourglass
+                        ? new Hourglass(hourglassSetup.usedMarker, hourglassSetup.hourglassSpriteRenderer)
+                        : null;
                     return new GridCell(grid, x, y, targetPortal, targetElevator, targetResearchPoint, exitLists,
-                        pickup, hourglass, this);
+                        pickup, hourglass, pickedUpAllItemsEventChannel, this);
                 });
         }
 
-        private void OnDrawGizmos()
+        private void OnDestroy()
         {
-            Debug.DrawLine(GetCellWorldPosition(0, 0), GetCellWorldPosition(1, 1), Color.red, 1f);
-            Debug.DrawLine(GetCellWorldPosition(0, 1), GetCellWorldPosition(1, 0), Color.red, 1f);
-        }
-
-        private Vector3 GetCellWorldPosition(int x, int y)
-        {
-            return OwnTransform.rotation * tileVisualTransform.localRotation * (new Vector3(x, 0, y) * CellSize) +
-                   _originPosition;
+            Grid?.Dispose();
         }
     }
 }

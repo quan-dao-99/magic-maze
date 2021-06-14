@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LiftStudio
 {
-    public class CustomGrid<T>
+    public class CustomGrid<T> : IDisposable where T : IDisposable
     {
         private readonly Transform _containerTransform;
         private readonly Transform _visualTransform;
@@ -134,6 +134,14 @@ namespace LiftStudio
             vectorToFormat.x = Mathf.Round(vectorToFormat.x * 10f) / 10f;
             vectorToFormat.z = Mathf.Round(vectorToFormat.z * 10f) / 10f;
             return vectorToFormat;
+        }
+
+        public void Dispose()
+        {
+            foreach (var gridCell in _grid)
+            {
+                gridCell.Dispose();
+            }
         }
     }
 }

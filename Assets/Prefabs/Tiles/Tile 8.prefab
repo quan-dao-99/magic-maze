@@ -2992,7 +2992,7 @@ MonoBehaviour:
     hasResearched: 0
   - targetCharacterType: 3
     gridPosition: {x: 2, y: 3}
-    attachPoint: {fileID: 6436895358638691410}
+    attachPoint: {fileID: 537087707694127719}
     hasResearched: 0
   exitSetups: []
   pickupSetup:
@@ -3002,6 +3002,7 @@ MonoBehaviour:
     gridPosition: {x: -1, y: -1}
     usedMarker: {fileID: 0}
     hourglassSpriteRenderer: {fileID: 0}
+  pickedUpAllItemsEventChannel: {fileID: 11400000, guid: 18e845887b21b08449b06ff57f079abe, type: 2}
 --- !u!1 &8823035640842650355
 GameObject:
   m_ObjectHideFlags: 0

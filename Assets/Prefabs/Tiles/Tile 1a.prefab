@@ -2343,6 +2343,7 @@ MonoBehaviour:
     gridPosition: {x: 3, y: 3}
     usedMarker: {fileID: 11992447055472168}
     hourglassSpriteRenderer: {fileID: 105825803312437101}
+  pickedUpAllItemsEventChannel: {fileID: 11400000, guid: 18e845887b21b08449b06ff57f079abe, type: 2}
   characterSpawnPositions:
   - {fileID: 2109987341340401768}
   - {fileID: 2327530699898337999}

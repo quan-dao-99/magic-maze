@@ -8,10 +8,13 @@ namespace LiftStudio
         [SerializeField] private TMP_Text pickupAllItemsText;
         [SerializeField] private TMP_Text runToExitsText;
 
+        [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
+        [SerializeField] private PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel;
+
         private void Awake()
         {
-            Game.AllItemsPickedUp += OnAllItemsPickedUp;
-            Game.AllCharactersOutOfBoard += OnAllCharactersOutOfBoard;
+            pickedUpAllItemsEventChannel.AllItemsPickedUp += OnAllItemsPickedUp;
+            gameEndedEventChannel.GameEnded += OnGameEnded;
         }
 
         private void OnAllItemsPickedUp()
@@ -19,15 +22,15 @@ namespace LiftStudio
             pickupAllItemsText.fontStyle = FontStyles.Strikethrough;
         }
 
-        private void OnAllCharactersOutOfBoard()
+        private void OnGameEnded()
         {
             runToExitsText.fontStyle = FontStyles.Strikethrough;
         }
 
         private void OnDestroy()
         {
-            Game.AllItemsPickedUp -= OnAllItemsPickedUp;
-            Game.AllCharactersOutOfBoard -= OnAllCharactersOutOfBoard;
+            pickedUpAllItemsEventChannel.AllItemsPickedUp -= OnAllItemsPickedUp;
+            gameEndedEventChannel.GameEnded -= OnGameEnded;
         }
     }
 }
