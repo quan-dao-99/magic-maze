@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,6 +9,11 @@ namespace LiftStudio
         [SerializeField] private LayerMask characterLayerMask;
         [SerializeField] private LayerMask wallLayerMask;
         [SerializeField] private MovementCardSettings movementCardSettings;
+        [SerializeField] private Transform tempCharacter;
+        [SerializeField] private float characterFloatHeight = 0.5f;
+        [SerializeField] private Texture2D holdCursor;
+
+        [Space]
         [SerializeField] private Game gameHandler;
         [SerializeField] private Timer timer;
 
@@ -19,10 +23,19 @@ namespace LiftStudio
         private Character _selectedCharacter;
         private GridCell _startGridCell;
         private GridCell _targetGridCell;
+        private Vector3 _additionalFloatPosition;
+
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
+
+        private Vector3 SelectedCharacterPosition
+        {
+            get => _selectedCharacter.transform.position;
+            set => _selectedCharacter.transform.position = value;
+        }
 
         private void Awake()
         {
+            _additionalFloatPosition = new Vector3(0, characterFloatHeight, 0);
             gameEndedEventChannel.GameEnded += OnGameEnded;
         }
 
@@ -70,7 +83,9 @@ namespace LiftStudio
                 if (targetGridCell.Exits != null && !gameHandler.HasCharactersBeenOnPickupCells) return;
 
                 _targetGridCell = targetGridCell;
-                _selectedCharacter.transform.position = _targetGridCell.CenterWorldPosition;
+                tempCharacter.position = _targetGridCell.CenterWorldPosition;
+                tempCharacter.gameObject.SetActive(true);
+                SelectedCharacterPosition = planeHitPoint + _additionalFloatPosition;
             }
         }
 
@@ -83,7 +98,9 @@ namespace LiftStudio
             _mouseStartPosition = ray.GetPoint(enter);
             _selectedCharacter = characterHitInfo.transform.GetComponent<Character>();
             var boardTile = gameHandler.CharacterOnTileDictionary[_selectedCharacter];
-            _startGridCell = boardTile.Grid.GetGridCellObject(_selectedCharacter.transform.position);
+            _startGridCell = boardTile.Grid.GetGridCellObject(SelectedCharacterPosition);
+            SelectedCharacterPosition += _additionalFloatPosition;
+            Cursor.SetCursor(holdCursor, Vector2.zero, CursorMode.ForceSoftware);
         }
 
         private void HandlePlacingSelectedCharacter()
@@ -158,9 +175,11 @@ namespace LiftStudio
 
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
         {
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
             targetGridCell.SetCharacter(_selectedCharacter);
             _startGridCell.ClearCharacter();
             gameHandler.CharacterOnTileDictionary[_selectedCharacter] = targetGridCell.Tile;
+            tempCharacter.gameObject.SetActive(false);
             _startGridCell = targetGridCell;
             _selectedCharacter.transform.position = targetGridCell.CenterWorldPosition;
             _selectedCharacter = null;
