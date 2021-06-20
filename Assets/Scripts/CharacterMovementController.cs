@@ -12,6 +12,7 @@ namespace LiftStudio
         [SerializeField] private Transform tempCharacter;
         [SerializeField] private float characterFloatHeight = 0.5f;
         [SerializeField] private Texture2D holdCursor;
+        [SerializeField] private Vector2Int cursorOffset;
 
         [Space]
         [SerializeField] private Game gameHandler;
@@ -85,7 +86,7 @@ namespace LiftStudio
                 _targetGridCell = targetGridCell;
                 tempCharacter.position = _targetGridCell.CenterWorldPosition;
                 tempCharacter.gameObject.SetActive(true);
-                SelectedCharacterPosition = planeHitPoint + _additionalFloatPosition;
+                SelectedCharacterPosition = targetPosition + _additionalFloatPosition;
             }
         }
 
@@ -100,7 +101,7 @@ namespace LiftStudio
             var boardTile = gameHandler.CharacterOnTileDictionary[_selectedCharacter];
             _startGridCell = boardTile.Grid.GetGridCellObject(SelectedCharacterPosition);
             SelectedCharacterPosition += _additionalFloatPosition;
-            Cursor.SetCursor(holdCursor, Vector2.zero, CursorMode.ForceSoftware);
+            Cursor.SetCursor(holdCursor, cursorOffset, CursorMode.Auto);
         }
 
         private void HandlePlacingSelectedCharacter()
