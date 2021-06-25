@@ -11,11 +11,20 @@ namespace LiftStudio
         [SerializeField] private byte maxPlayersPerRoom = 4;
         [SerializeField] private GameObject controlPanel;
         [SerializeField] private GameObject progressLabel;
+        [SerializeField] private GameObject roomListContainer;
+        [SerializeField] private GameObject currentRoomInfoContainer;
+
         [SerializeField] private RoomListItem roomListItemPrefab;
         [SerializeField] private Transform roomInfosContainer;
         [SerializeField] private TMP_InputField roomNameInputField;
 
+        [SerializeField] private PlayerListItem playerListItemPrefab;
+        [SerializeField] private Transform playerInfosContainer;
+
         private readonly Dictionary<string, RoomListItem> _cachedRoomList = new Dictionary<string, RoomListItem>();
+
+        private readonly Dictionary<string, PlayerListItem>
+            _cachedPlayerList = new Dictionary<string, PlayerListItem>();
 
         private const string GameVersion = "1";
         private bool _isConnecting;
@@ -31,6 +40,13 @@ namespace LiftStudio
             controlPanel.SetActive(true);
 
             Connect();
+        }
+
+        public void StartGame()
+        {
+            if (!PhotonNetwork.IsMasterClient) return;
+            
+            PhotonNetwork.LoadLevel(1);
         }
 
         public void CreateRoom()
@@ -62,6 +78,14 @@ namespace LiftStudio
         public override void OnJoinedRoom()
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+            roomListContainer.SetActive(false);
+            currentRoomInfoContainer.SetActive(true);
+            foreach (var player in PhotonNetwork.CurrentRoom.Players.Values)
+            {
+                var spawnedPlayerListItem = Instantiate(playerListItemPrefab, playerInfosContainer);
+                spawnedPlayerListItem.Setup(player);
+                _cachedPlayerList.Add(player.NickName, spawnedPlayerListItem);
+            }
         }
 
         public override void OnJoinedLobby()
@@ -72,6 +96,18 @@ namespace LiftStudio
         public override void OnRoomListUpdate(List<RoomInfo> roomList)
         {
             UpdateCachedRoomList(roomList);
+        }
+
+        public override void OnPlayerEnteredRoom(Player newPlayer)
+        {
+            var spawnedPlayerListItem = Instantiate(playerListItemPrefab, playerInfosContainer);
+            spawnedPlayerListItem.Setup(newPlayer);
+            _cachedPlayerList.Add(newPlayer.NickName, spawnedPlayerListItem);
+        }
+
+        public override void OnPlayerLeftRoom(Player otherPlayer)
+        {
+            Destroy(_cachedPlayerList[otherPlayer.NickName].gameObject);
         }
 
         public override void OnLeftLobby()

@@ -163,7 +163,7 @@ namespace LiftStudio
             if (_targetGridCell.Pickup != null &&
                 _targetGridCell.Pickup.targetCharacterType == _selectedCharacter.CharacterType)
             {
-                gameHandler.NotifyCharacterPlacedOnPickupCell();
+                gameHandler.NotifyCharacterPlacedOnPickupCell(tempCharacter);
             }
             else if (_targetGridCell.Hourglass is {isAvailable: true})
             {

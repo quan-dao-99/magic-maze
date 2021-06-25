@@ -56,7 +56,7 @@ namespace LiftStudio
             }
         }
 
-        public void NotifyCharacterPlacedOnPickupCell()
+        public void NotifyCharacterPlacedOnPickupCell(Transform tempCharacterTransform)
         {
             if (HasCharactersBeenOnPickupCells) return;
 
@@ -65,7 +65,11 @@ namespace LiftStudio
             {
                 var tile = pair.Value;
                 var character = pair.Key;
-                var characterGridCell = tile.Grid.GetGridCellObject(character.transform.position);
+                var targetCharacterPosition = character.transform.position;
+                var finalCharacterPosition = Math.Abs(targetCharacterPosition.y - 0.5f) < 0.01f
+                    ? tempCharacterTransform.position
+                    : targetCharacterPosition;
+                var characterGridCell = tile.Grid.GetGridCellObject(finalCharacterPosition);
                 if (characterGridCell.Pickup == null ||
                     characterGridCell.Pickup.targetCharacterType != character.CharacterType)
                 {
