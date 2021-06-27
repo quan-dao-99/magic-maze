@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using LiftStudio.EventChannels;
 using UnityEngine;
 
 namespace LiftStudio

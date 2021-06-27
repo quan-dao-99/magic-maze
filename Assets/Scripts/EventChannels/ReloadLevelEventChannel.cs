@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace LiftStudio
+namespace LiftStudio.EventChannels
 {
     [CreateAssetMenu(fileName = "ReloadLevelEventChannel", menuName = "Events/ReloadLevelEventChannel", order = 0)]
     public class ReloadLevelEventChannel : ScriptableObject

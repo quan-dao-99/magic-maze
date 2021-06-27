@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace LiftStudio
+namespace LiftStudio.EventChannels
 {
     [CreateAssetMenu(fileName = "QuitGameEventChannel", menuName = "Events/QuitGameEventChannel")]
     public class QuitGameEventChannel : ScriptableObject

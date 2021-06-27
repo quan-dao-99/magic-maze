@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using LiftStudio.EventChannels;
+using UnityEngine;
 
 namespace LiftStudio
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace LiftStudio
+namespace LiftStudio.EventChannels
 {
     [CreateAssetMenu(fileName = "GameEndedEventChannel", menuName = "Events/GameEndedEventChannel")]
     public class GameEndedEventChannel : ScriptableObject

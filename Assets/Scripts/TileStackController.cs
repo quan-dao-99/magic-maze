@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Photon.Pun;
 using UnityEngine;
 
 namespace LiftStudio
@@ -10,7 +11,7 @@ namespace LiftStudio
 
         public Stack<Tile> GameTileStacks { get; } = new Stack<Tile>();
 
-        private void Start()
+        public void SetupTileStacks()
         {
             var allTilesCopy = new List<Tile>(allTiles);
             var nextTileVerticalPosition = tileStackSpawnPosition.position;
@@ -18,9 +19,8 @@ namespace LiftStudio
             {
                 var randomTileIndex = Random.Range(0, allTilesCopy.Count);
                 nextTileVerticalPosition.y += 0.5f;
-                var tile = Instantiate(allTilesCopy[randomTileIndex], nextTileVerticalPosition,
-                    Quaternion.Euler(180, 0, 0),
-                    tileStackSpawnPosition);
+                var tile = PhotonNetwork.InstantiateRoomObject(allTilesCopy[randomTileIndex].name, nextTileVerticalPosition,
+                    Quaternion.Euler(180, 0, 0)).GetComponent<Tile>();
                 GameTileStacks.Push(tile);
                 allTilesCopy.RemoveAt(randomTileIndex);
             }

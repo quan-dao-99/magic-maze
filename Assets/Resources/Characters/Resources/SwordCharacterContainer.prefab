@@ -144,6 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterType: 1
   characterCollider: {fileID: 7585275354934386213}
+  photonView: {fileID: 292458671614128022}
 --- !u!114 &292458671614128022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +161,7 @@ MonoBehaviour:
   Group: 0
   prefixField: -1
   Synchronization: 3
-  OwnershipTransfer: 0
+  OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
   - {fileID: 3113780204249945111}

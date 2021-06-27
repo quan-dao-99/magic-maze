@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace LiftStudio
+namespace LiftStudio.EventChannels
 {
     [CreateAssetMenu(fileName = "PickedUpAllItemsEventChannel", menuName = "Events/PickedUpAllItemsEventChannel")]
     public class PickedUpAllItemsEventChannel : ScriptableObject
