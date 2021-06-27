@@ -107,6 +107,8 @@ namespace LiftStudio
         
         public void OnEvent(EventData photonEvent)
         {
+            if (photonEvent.Code >= 200) return;
+
             var data = (object[]) photonEvent.CustomData;
             var targetCharacterType = (CharacterType) data[0];
             Character targetCharacter = null;
@@ -144,6 +146,7 @@ namespace LiftStudio
             _plane.Raycast(ray, out var enter);
             _mouseStartPosition = ray.GetPoint(enter);
             var selectedCharacter = characterHitInfo.transform.GetComponent<Character>();
+            Debug.Log(gameHandler.CharacterOnTileDictionary.Count);
             var boardTile = gameHandler.CharacterOnTileDictionary[selectedCharacter];
             var selectedCharacterPosition = selectedCharacter.transform.position;
             _startGridCell = boardTile.Grid.GetGridCellObject(selectedCharacterPosition);
