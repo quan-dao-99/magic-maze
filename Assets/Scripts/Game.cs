@@ -18,7 +18,9 @@ namespace LiftStudio
 
         public Transform OutOfBoardTransform => outOfBoardTransform;
 
-        public Dictionary<Character, Tile> CharacterOnTileDictionary { get; } = new Dictionary<Character, Tile>();
+        public Dictionary<Character, Tile> CharacterOnTileDictionary { get; } =
+            new Dictionary<Character, Tile>();
+
         public bool HasCharactersBeenOnPickupCells { get; private set; }
 
         private void Update()

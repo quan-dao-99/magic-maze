@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using ExitGames.Client.Photon;
 using LiftStudio.EventChannels;
 using Photon.Pun;
@@ -18,14 +19,10 @@ namespace LiftStudio
         [SerializeField] private Texture2D holdCursor;
         [SerializeField] private Vector2Int cursorOffset;
 
-        [Space]
-        [SerializeField] private Game gameHandler;
+        [Space] [SerializeField] private Game gameHandler;
         [SerializeField] private Timer timer;
 
         [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
-
-        private const byte SelectCharacterEventCode = 1;
-        private const byte MoveCharacterEventCode = 2;
 
         private Vector3 _mouseStartPosition;
         private Character _selectedCharacter;
@@ -33,8 +30,14 @@ namespace LiftStudio
         private GridCell _targetGridCell;
         private Vector3 _additionalFloatPosition;
 
+        private readonly Dictionary<CharacterType, bool> _charactersMoving =
+            new Dictionary<CharacterType, bool>
+            {
+                {CharacterType.Axe, false}, {CharacterType.Bow, false},
+                {CharacterType.Potion, false}, {CharacterType.Sword, false}
+            };
+
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
-        private readonly RaiseEventOptions _raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient };
 
         private Vector3 SelectedCharacterPosition
         {
@@ -47,7 +50,7 @@ namespace LiftStudio
             _additionalFloatPosition = new Vector3(0, characterFloatHeight, 0);
             gameEndedEventChannel.GameEnded += OnGameEnded;
         }
-        
+
         private void OnEnable()
         {
             PhotonNetwork.AddCallbackTarget(this);
@@ -77,7 +80,7 @@ namespace LiftStudio
         {
             if (EventSystem.current.IsPointerOverGameObject()) return;
 
-            if (_selectedCharacter == null) return;
+            if (!_selectedCharacter) return;
 
             if (!Input.GetMouseButton(0)) return;
 
@@ -97,17 +100,22 @@ namespace LiftStudio
                 if (targetGridCell.Exits != null && !gameHandler.HasCharactersBeenOnPickupCells) return;
 
                 var content = new object[] {_selectedCharacter.CharacterType, targetPosition};
-                PhotonNetwork.RaiseEvent(MoveCharacterEventCode, content, _raiseEventOptions,
+                PhotonNetwork.RaiseEvent((int) PhotonEventCodes.MoveCharacterCode, content,
+                    RaiseEventOptionsHelper.Others,
                     SendOptions.SendReliable);
+                SelectedCharacterPosition = targetPosition + _additionalFloatPosition;
                 _targetGridCell = targetGridCell;
                 tempCharacter.position = _targetGridCell.CenterWorldPosition;
                 tempCharacter.gameObject.SetActive(true);
             }
         }
-        
+
         public void OnEvent(EventData photonEvent)
         {
             if (photonEvent.Code >= 200) return;
+
+            if (photonEvent.Code == (int) PhotonEventCodes.SetupTileStacksCode ||
+                photonEvent.Code == (int) PhotonEventCodes.SetupPlayersCode) return;
 
             var data = (object[]) photonEvent.CustomData;
             var targetCharacterType = (CharacterType) data[0];
@@ -118,24 +126,75 @@ namespace LiftStudio
 
                 targetCharacter = character;
             }
-            if (targetCharacter == null) return;
 
+            if (targetCharacter == null) return;
 
             switch (photonEvent.Code)
             {
-                case SelectCharacterEventCode:
-                    var boardTile = gameHandler.CharacterOnTileDictionary[targetCharacter];
-                    var selectedCharacterPosition = targetCharacter.transform.position;
-                    _startGridCell = boardTile.Grid.GetGridCellObject(selectedCharacterPosition);
-                    _selectedCharacter = targetCharacter;
-                    selectedCharacterPosition += _additionalFloatPosition;
-                    targetCharacter.transform.position = selectedCharacterPosition;
+                case (int) PhotonEventCodes.SelectCharacterCode:
+                    HandleReceiveSelectCharacterCode(targetCharacterType, targetCharacter);
                     break;
-                case MoveCharacterEventCode:
-                    var targetPosition = (Vector3) data[1];
-                    targetCharacter.transform.position = targetPosition + _additionalFloatPosition;
+                case (int) PhotonEventCodes.MoveCharacterCode:
+                    if (_selectedCharacter && targetCharacterType == _selectedCharacter.CharacterType) return;
+
+                    targetCharacter.transform.position = (Vector3) data[1] + _additionalFloatPosition;
+                    break;
+                case (int) PhotonEventCodes.TryPlaceCharacterCode:
+                    HandleReceiveTryPlaceCharacterCode(targetCharacterType, targetCharacter, data);
+                    break;
+                case (int) PhotonEventCodes.ConfirmPlaceCharacterCode:
+                    HandleReceiveConfirmPlaceCharacterCode(targetCharacterType, targetCharacter, data);
                     break;
             }
+        }
+
+        private void HandleReceiveSelectCharacterCode(CharacterType targetCharacterType, Component targetCharacter)
+        {
+            if (_selectedCharacter && targetCharacterType == _selectedCharacter.CharacterType) return;
+
+            _charactersMoving[targetCharacterType] = true;
+            var targetCharacterTransform = targetCharacter.transform;
+            var selectedCharacterPosition = targetCharacterTransform.position;
+            selectedCharacterPosition += _additionalFloatPosition;
+            targetCharacterTransform.position = selectedCharacterPosition;
+        }
+
+        private void HandleReceiveTryPlaceCharacterCode(CharacterType targetCharacterType, Object targetCharacter, IReadOnlyList<object> data)
+        {
+            if (!_charactersMoving[targetCharacterType]) return;
+
+            var targetTile = TilePlacer.AllPlacedTiles[(int) data[1]];
+            var targetGridCell = targetTile.Grid.GetGridCellObject((Vector3) data[2]);
+            if (targetGridCell.CharacterOnTop &&
+                targetGridCell.CharacterOnTop != targetCharacter) return;
+
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.ConfirmPlaceCharacterCode, data,
+                RaiseEventOptionsHelper.All,
+                SendOptions.SendReliable);
+        }
+
+        private void HandleReceiveConfirmPlaceCharacterCode(CharacterType targetCharacterType,
+            Character targetCharacter, IReadOnlyList<object> data)
+        {
+            if (!_charactersMoving[targetCharacterType]) return;
+
+            var targetTile = TilePlacer.AllPlacedTiles[(int) data[1]];
+            var targetGridCell = targetTile.Grid.GetGridCellObject((Vector3) data[2]);
+            var startTile = TilePlacer.AllPlacedTiles[(int) data[3]];
+            var startGridCell = startTile.Grid.GetGridCellObject((Vector3) data[4]);
+
+            _charactersMoving[targetCharacterType] = false;
+            startGridCell.ClearCharacter();
+            targetGridCell.SetCharacter(targetCharacter);
+            gameHandler.CharacterOnTileDictionary[targetCharacter] = targetGridCell.Tile;
+            targetCharacter.transform.position = targetGridCell.CenterWorldPosition;
+
+            if (!_selectedCharacter || targetCharacterType != _selectedCharacter.CharacterType) return;
+
+            tempCharacter.gameObject.SetActive(false);
+            _startGridCell = targetGridCell;
+            _selectedCharacter = null;
+            _targetGridCell = null;
         }
 
         private void HandleSelectingCharacter()
@@ -146,14 +205,17 @@ namespace LiftStudio
             _plane.Raycast(ray, out var enter);
             _mouseStartPosition = ray.GetPoint(enter);
             var selectedCharacter = characterHitInfo.transform.GetComponent<Character>();
-            Debug.Log(gameHandler.CharacterOnTileDictionary.Count);
-            var boardTile = gameHandler.CharacterOnTileDictionary[selectedCharacter];
-            var selectedCharacterPosition = selectedCharacter.transform.position;
-            _startGridCell = boardTile.Grid.GetGridCellObject(selectedCharacterPosition);
+            if (_charactersMoving[selectedCharacter.CharacterType]) return;
+
             _selectedCharacter = selectedCharacter;
+            _charactersMoving[selectedCharacter.CharacterType] = true;
+            var boardTile = gameHandler.CharacterOnTileDictionary[selectedCharacter];
+            _startGridCell = boardTile.Grid.GetGridCellObject(SelectedCharacterPosition);
+            SelectedCharacterPosition += _additionalFloatPosition;
             Cursor.SetCursor(holdCursor, cursorOffset, CursorMode.Auto);
             var content = new object[] {_selectedCharacter.CharacterType};
-            PhotonNetwork.RaiseEvent(SelectCharacterEventCode, content, _raiseEventOptions,
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.SelectCharacterCode, content,
+                RaiseEventOptionsHelper.Others,
                 SendOptions.SendReliable);
         }
 
@@ -229,15 +291,17 @@ namespace LiftStudio
 
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
         {
+            var targetTileIndex = TilePlacer.AllPlacedTiles.IndexOf(targetGridCell.Tile);
+            var startTileIndex = TilePlacer.AllPlacedTiles.IndexOf(_startGridCell.Tile);
+            var content = new object[]
+            {
+                _selectedCharacter.CharacterType, targetTileIndex, targetGridCell.CenterWorldPosition, startTileIndex,
+                _startGridCell.CenterWorldPosition
+            };
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.TryPlaceCharacterCode, content,
+                RaiseEventOptionsHelper.MasterClient,
+                SendOptions.SendReliable);
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
-            _startGridCell.ClearCharacter();
-            targetGridCell.SetCharacter(_selectedCharacter);
-            gameHandler.CharacterOnTileDictionary[_selectedCharacter] = targetGridCell.Tile;
-            tempCharacter.gameObject.SetActive(false);
-            _startGridCell = targetGridCell;
-            _selectedCharacter.transform.position = targetGridCell.CenterWorldPosition;
-            _selectedCharacter = null;
-            _targetGridCell = null;
         }
 
         private void TakeCharacterOutOfBoard(Character targetCharacter)
@@ -255,7 +319,7 @@ namespace LiftStudio
         {
             enabled = false;
         }
-        
+
         private void OnDisable()
         {
             PhotonNetwork.RemoveCallbackTarget(this);

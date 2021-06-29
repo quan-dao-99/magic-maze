@@ -2944,8 +2944,6 @@ GameObject:
   - component: {fileID: 3206076384851586875}
   - component: {fileID: 2652162805857111119}
   - component: {fileID: 7358990481311655954}
-  - component: {fileID: 4711609015144732874}
-  - component: {fileID: -1734458251595448157}
   m_Layer: 7
   m_Name: Tile 9
   m_TagString: Untagged
@@ -3015,45 +3013,6 @@ MonoBehaviour:
     gridPosition: {x: -1, y: -1}
     usedMarker: {fileID: 0}
     hourglassSpriteRenderer: {fileID: 0}
---- !u!114 &4711609015144732874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8587979205355786631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: -1734458251595448157}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &-1734458251595448157
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8587979205355786631}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 0
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!1 &9079261699115592612
 GameObject:
   m_ObjectHideFlags: 0
