@@ -177,8 +177,8 @@ namespace LiftStudio
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
         {
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
-            targetGridCell.SetCharacter(_selectedCharacter);
             _startGridCell.ClearCharacter();
+            targetGridCell.SetCharacter(_selectedCharacter);
             gameHandler.CharacterOnTileDictionary[_selectedCharacter] = targetGridCell.Tile;
             tempCharacter.gameObject.SetActive(false);
             _startGridCell = targetGridCell;
