@@ -13,8 +13,6 @@ namespace LiftStudio
 
         public Stack<Tile> GameTileStacks { get; } = new Stack<Tile>();
         
-        private readonly RaiseEventOptions _raiseEventOptions = new RaiseEventOptions { Receivers = ReceiverGroup.All };
-
         private void OnEnable()
         {
             PhotonNetwork.AddCallbackTarget(this);
@@ -27,11 +25,13 @@ namespace LiftStudio
             while (allTilesCopy.Count != 0)
             {
                 var randomTileIndex = Random.Range(0, allTilesCopy.Count);
-                content.Add(randomTileIndex);
+                var targetTileIndex = allTiles.IndexOf(allTilesCopy[randomTileIndex]);
+                content.Add(targetTileIndex);
                 allTilesCopy.RemoveAt(randomTileIndex);
             }
-            
-            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.SetupTileStacksCode, content.ToArray(), _raiseEventOptions,
+
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.SetupTileStacksCode, content.ToArray(),
+                RaiseEventOptionsHelper.All,
                 SendOptions.SendReliable);
         }
 
