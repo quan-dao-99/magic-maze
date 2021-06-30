@@ -114,8 +114,10 @@ namespace LiftStudio
         {
             if (photonEvent.Code >= 200) return;
 
-            if (photonEvent.Code == (int) PhotonEventCodes.SetupTileStacksCode ||
-                photonEvent.Code == (int) PhotonEventCodes.SetupPlayersCode) return;
+            if (photonEvent.Code != (int) PhotonEventCodes.SelectCharacterCode &&
+                photonEvent.Code != (int) PhotonEventCodes.MoveCharacterCode &&
+                photonEvent.Code != (int) PhotonEventCodes.TryPlaceCharacterCode &&
+                photonEvent.Code != (int) PhotonEventCodes.ConfirmPlaceCharacterCode) return;
 
             var data = (object[]) photonEvent.CustomData;
             var targetCharacterType = (CharacterType) data[0];

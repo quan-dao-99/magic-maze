@@ -8,5 +8,7 @@ namespace LiftStudio
         MoveCharacterCode = 4,
         TryPlaceCharacterCode = 5,
         ConfirmPlaceCharacterCode = 6,
+        TryTakeNewTiles = 7,
+        ConfirmCharacterResearch = 8,
     }
 }
