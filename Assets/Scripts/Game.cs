@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using ExitGames.Client.Photon;
@@ -11,9 +10,11 @@ namespace LiftStudio
 {
     public class Game : MonoBehaviour, IOnEventCallback
     {
+        [SerializeField] private TilePlacer tilePlacer;
         [SerializeField] private TileStackController tileStackController;
         [SerializeField] private Transform outOfBoardTransform;
         [SerializeField] private LayerMask groundLayerMask;
+        [SerializeField] private CharacterMovementController characterMovementController;
 
         [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
         [SerializeField] private PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel;
@@ -43,16 +44,25 @@ namespace LiftStudio
             if (photonEvent.Code >= 200) return;
 
             if (photonEvent.Code != (int) PhotonEventCodes.TryTakeNewTiles &&
-                photonEvent.Code != (int) PhotonEventCodes.ConfirmCharacterResearch) return;
+                photonEvent.Code != (int) PhotonEventCodes.ConfirmCharacterResearch &&
+                photonEvent.Code != (int) PhotonEventCodes.NotifyCharacterPlacedOnPickupCell &&
+                photonEvent.Code != (int) PhotonEventCodes.ConfirmAllCharactersBeenOnPickupCells) return;
 
+            var data = (object[]) photonEvent.CustomData;
             switch (photonEvent.Code)
             {
                 case (int) PhotonEventCodes.TryTakeNewTiles:
                     HandleTryTakeNewTile();
                     break;
                 case (int) PhotonEventCodes.ConfirmCharacterResearch:
-                    var data = (object[]) photonEvent.CustomData;
                     HandleConfirmCharacterResearch(data);
+                    break;
+                case (int) PhotonEventCodes.NotifyCharacterPlacedOnPickupCell:
+                    HandleNotifyCharacterPlacedOnPickupCell(data);
+                    break;
+                case (int) PhotonEventCodes.ConfirmAllCharactersBeenOnPickupCells:
+                    HasCharactersBeenOnPickupCells = true;
+                    pickedUpAllItemsEventChannel.RaiseEvent();
                     break;
             }
         }
@@ -63,32 +73,13 @@ namespace LiftStudio
                 SendOptions.SendReliable);
         }
 
-        public void NotifyCharacterPlacedOnPickupCell(Transform tempCharacterTransform)
+        public void NotifyCharacterPlacedOnPickupCell(CharacterType movingCharacterType, Transform tempCharacterTransform)
         {
             if (HasCharactersBeenOnPickupCells) return;
 
-            var allCharacterOnPickupCells = true;
-            foreach (var pair in CharacterOnTileDictionary)
-            {
-                var tile = pair.Value;
-                var character = pair.Key;
-                var targetCharacterPosition = character.transform.position;
-                var finalCharacterPosition = Math.Abs(targetCharacterPosition.y - 0.5f) < 0.01f
-                    ? tempCharacterTransform.position
-                    : targetCharacterPosition;
-                var characterGridCell = tile.Grid.GetGridCellObject(finalCharacterPosition);
-                if (characterGridCell.Pickup == null ||
-                    characterGridCell.Pickup.targetCharacterType != character.CharacterType)
-                {
-                    allCharacterOnPickupCells = false;
-                }
-            }
-
-            HasCharactersBeenOnPickupCells = allCharacterOnPickupCells;
-            if (HasCharactersBeenOnPickupCells)
-            {
-                pickedUpAllItemsEventChannel.RaiseEvent();
-            }
+            var content = new object[] {movingCharacterType, tempCharacterTransform.position};
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.NotifyCharacterPlacedOnPickupCell, content,
+                RaiseEventOptionsHelper.MasterClient, SendOptions.SendReliable);
         }
 
         public void NotifyTakeCharacterOutOfBoard(Character targetCharacter)
@@ -130,7 +121,7 @@ namespace LiftStudio
 
                 if (gridCellResearchPoint.targetCharacterType != pair.Key.CharacterType) continue;
 
-                TilePlacer.PlaceTile(tileStackController.GameTileStacks.Pop(),
+                tilePlacer.PlaceTile(tileStackController.GameTileStacks.Pop(),
                     attachPoint.position,
                     Quaternion.LookRotation(attachPoint.forward));
                 gridCellResearchPoint.hasResearched = true;
@@ -156,11 +147,46 @@ namespace LiftStudio
                 if (!shouldPlaceNewTile) return;
                 
                 var attachPoint = gridCellResearchPoint.attachPoint;
-                TilePlacer.PlaceTile(tileStackController.GameTileStacks.Pop(),
+                tilePlacer.PlaceTile(tileStackController.GameTileStacks.Pop(),
                     attachPoint.position,
                     Quaternion.LookRotation(attachPoint.forward));
                 Physics.SyncTransforms();
             }
+        }
+        
+        private void HandleNotifyCharacterPlacedOnPickupCell(object[] data)
+        {
+            var movingCharacterType = (CharacterType) data[0];
+            if (characterMovementController.CharactersMoving.Any(pair =>
+                pair.Key != movingCharacterType && pair.Value))
+            {
+                HasCharactersBeenOnPickupCells = false;
+                return;
+            }
+
+            var allCharacterOnPickupCells = true;
+            foreach (var pair in CharacterOnTileDictionary)
+            {
+                var tile = pair.Value;
+                var character = pair.Key;
+                var targetCharacterPosition = character.transform.position;
+                var finalCharacterPosition = targetCharacterPosition.y > 0f
+                    ? (Vector3) data[1]
+                    : targetCharacterPosition;
+                var characterGridCell = tile.Grid.GetGridCellObject(finalCharacterPosition);
+                if (characterGridCell.Pickup == null ||
+                    characterGridCell.Pickup.TargetCharacterType != character.CharacterType)
+                {
+                    allCharacterOnPickupCells = false;
+                }
+            }
+
+            HasCharactersBeenOnPickupCells = allCharacterOnPickupCells;
+            if (!HasCharactersBeenOnPickupCells) return;
+            
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.ConfirmAllCharactersBeenOnPickupCells, null,
+                RaiseEventOptionsHelper.Others, SendOptions.SendReliable);
+            pickedUpAllItemsEventChannel.RaiseEvent();
         }
         
         private void OnDisable()

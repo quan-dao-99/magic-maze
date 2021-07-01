@@ -41,14 +41,12 @@ namespace LiftStudio
             
             if (photonEvent.Code != (int) PhotonEventCodes.SetupTileStacksCode) return;
 
-            var allTilesCopy = new List<Tile>(allTiles);
             var indexesArray = (int[]) photonEvent.CustomData;
             var nextTileVerticalPosition = tileStackSpawnPosition.position;
             foreach (var randomTileIndex in indexesArray)
             {
-                var tile = Instantiate(allTilesCopy[randomTileIndex], nextTileVerticalPosition,
+                var tile = Instantiate(allTiles[randomTileIndex], nextTileVerticalPosition,
                     Quaternion.Euler(180, 0, 0));
-                allTilesCopy.RemoveAt(randomTileIndex);
                 GameTileStacks.Push(tile);
                 nextTileVerticalPosition.y += 0.5f;
             }

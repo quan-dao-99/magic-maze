@@ -10,5 +10,7 @@ namespace LiftStudio
         ConfirmPlaceCharacterCode = 6,
         TryTakeNewTiles = 7,
         ConfirmCharacterResearch = 8,
+        NotifyCharacterPlacedOnPickupCell = 9,
+        ConfirmAllCharactersBeenOnPickupCells = 10,
     }
 }

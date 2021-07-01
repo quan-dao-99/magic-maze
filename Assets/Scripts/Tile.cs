@@ -60,7 +60,7 @@ namespace LiftStudio
 
                     var isPickupTile = pickupSetup.gridPosition.x == x && pickupSetup.gridPosition.y == y;
                     var pickup = isPickupTile
-                        ? new Pickup {targetCharacterType = pickupSetup.targetCharacterType}
+                        ? new Pickup {TargetCharacterType = pickupSetup.targetCharacterType}
                         : null;
                     var isHourglass = hourglassSetup.gridPosition.x == x && hourglassSetup.gridPosition.y == y;
                     var hourglass = isHourglass

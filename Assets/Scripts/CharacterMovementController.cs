@@ -19,7 +19,9 @@ namespace LiftStudio
         [SerializeField] private Texture2D holdCursor;
         [SerializeField] private Vector2Int cursorOffset;
 
-        [Space] [SerializeField] private Game gameHandler;
+        [Space]
+        [SerializeField] private TilePlacer tilePlacer;
+        [SerializeField] private Game gameHandler;
         [SerializeField] private Timer timer;
 
         [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
@@ -30,13 +32,6 @@ namespace LiftStudio
         private GridCell _targetGridCell;
         private Vector3 _additionalFloatPosition;
 
-        private readonly Dictionary<CharacterType, bool> _charactersMoving =
-            new Dictionary<CharacterType, bool>
-            {
-                {CharacterType.Axe, false}, {CharacterType.Bow, false},
-                {CharacterType.Potion, false}, {CharacterType.Sword, false}
-            };
-
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
 
         private Vector3 SelectedCharacterPosition
@@ -44,6 +39,12 @@ namespace LiftStudio
             get => _selectedCharacter.transform.position;
             set => _selectedCharacter.transform.position = value;
         }
+
+        public Dictionary<CharacterType, bool> CharactersMoving { get; } = new Dictionary<CharacterType, bool>
+        {
+            {CharacterType.Axe, false}, {CharacterType.Bow, false},
+            {CharacterType.Potion, false}, {CharacterType.Sword, false}
+        };
 
         private void Awake()
         {
@@ -90,7 +91,7 @@ namespace LiftStudio
             var mouseMoveDirection = planeHitPoint - _mouseStartPosition;
             var targetPosition = _startGridCell.CenterWorldPosition + mouseMoveDirection;
 
-            foreach (var placedTile in TilePlacer.AllPlacedTiles)
+            foreach (var placedTile in tilePlacer.AllPlacedTiles)
             {
                 var targetGridCell = placedTile.Grid.GetGridCellObject(targetPosition);
                 if (targetGridCell == null) continue;
@@ -154,7 +155,7 @@ namespace LiftStudio
         {
             if (_selectedCharacter && targetCharacterType == _selectedCharacter.CharacterType) return;
 
-            _charactersMoving[targetCharacterType] = true;
+            CharactersMoving[targetCharacterType] = true;
             var targetCharacterTransform = targetCharacter.transform;
             var selectedCharacterPosition = targetCharacterTransform.position;
             selectedCharacterPosition += _additionalFloatPosition;
@@ -163,9 +164,9 @@ namespace LiftStudio
 
         private void HandleReceiveTryPlaceCharacterCode(CharacterType targetCharacterType, Object targetCharacter, IReadOnlyList<object> data)
         {
-            if (!_charactersMoving[targetCharacterType]) return;
+            if (!CharactersMoving[targetCharacterType]) return;
 
-            var targetTile = TilePlacer.AllPlacedTiles[(int) data[1]];
+            var targetTile = tilePlacer.AllPlacedTiles[(int) data[1]];
             var targetGridCell = targetTile.Grid.GetGridCellObject((Vector3) data[2]);
             if (targetGridCell.CharacterOnTop &&
                 targetGridCell.CharacterOnTop != targetCharacter) return;
@@ -178,14 +179,14 @@ namespace LiftStudio
         private void HandleReceiveConfirmPlaceCharacterCode(CharacterType targetCharacterType,
             Character targetCharacter, IReadOnlyList<object> data)
         {
-            if (!_charactersMoving[targetCharacterType]) return;
+            if (!CharactersMoving[targetCharacterType]) return;
 
-            var targetTile = TilePlacer.AllPlacedTiles[(int) data[1]];
+            var targetTile = tilePlacer.AllPlacedTiles[(int) data[1]];
             var targetGridCell = targetTile.Grid.GetGridCellObject((Vector3) data[2]);
-            var startTile = TilePlacer.AllPlacedTiles[(int) data[3]];
+            var startTile = tilePlacer.AllPlacedTiles[(int) data[3]];
             var startGridCell = startTile.Grid.GetGridCellObject((Vector3) data[4]);
 
-            _charactersMoving[targetCharacterType] = false;
+            CharactersMoving[targetCharacterType] = false;
             startGridCell.ClearCharacter();
             targetGridCell.SetCharacter(targetCharacter);
             gameHandler.CharacterOnTileDictionary[targetCharacter] = targetGridCell.Tile;
@@ -207,10 +208,10 @@ namespace LiftStudio
             _plane.Raycast(ray, out var enter);
             _mouseStartPosition = ray.GetPoint(enter);
             var selectedCharacter = characterHitInfo.transform.GetComponent<Character>();
-            if (_charactersMoving[selectedCharacter.CharacterType]) return;
+            if (CharactersMoving[selectedCharacter.CharacterType]) return;
 
             _selectedCharacter = selectedCharacter;
-            _charactersMoving[selectedCharacter.CharacterType] = true;
+            CharactersMoving[selectedCharacter.CharacterType] = true;
             var boardTile = gameHandler.CharacterOnTileDictionary[selectedCharacter];
             _startGridCell = boardTile.Grid.GetGridCellObject(SelectedCharacterPosition);
             SelectedCharacterPosition += _additionalFloatPosition;
@@ -277,24 +278,27 @@ namespace LiftStudio
                 return;
             }
 
-            if (_targetGridCell.Pickup != null &&
-                _targetGridCell.Pickup.targetCharacterType == _selectedCharacter.CharacterType)
+            var targetPickup = _targetGridCell.Pickup;
+            var targetHourglass = _targetGridCell.Hourglass;
+            MoveCharacterToTargetPosition(_targetGridCell);
+
+            if (targetPickup != null &&
+                targetPickup.TargetCharacterType == _selectedCharacter.CharacterType)
             {
-                gameHandler.NotifyCharacterPlacedOnPickupCell(tempCharacter);
+                gameHandler.NotifyCharacterPlacedOnPickupCell(_selectedCharacter.CharacterType, tempCharacter);
             }
-            else if (_targetGridCell.Hourglass is {isAvailable: true})
+            else if (targetHourglass is {isAvailable: true})
             {
                 _targetGridCell.UseHourglass();
                 timer.FlipHourglassTimer();
             }
 
-            MoveCharacterToTargetPosition(_targetGridCell);
         }
 
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
         {
-            var targetTileIndex = TilePlacer.AllPlacedTiles.IndexOf(targetGridCell.Tile);
-            var startTileIndex = TilePlacer.AllPlacedTiles.IndexOf(_startGridCell.Tile);
+            var targetTileIndex = tilePlacer.AllPlacedTiles.IndexOf(targetGridCell.Tile);
+            var startTileIndex = tilePlacer.AllPlacedTiles.IndexOf(_startGridCell.Tile);
             var content = new object[]
             {
                 _selectedCharacter.CharacterType, targetTileIndex, targetGridCell.CenterWorldPosition, startTileIndex,

@@ -8,6 +8,7 @@ namespace LiftStudio
 {
     public class GameSetup : MonoBehaviour, IOnEventCallback
     {
+        [SerializeField] private TilePlacer tilePlacer;
         [SerializeField] private TileStackController tileStackController;
         [SerializeField] private Game gameHandler;
         [SerializeField] private List<Character> allCharacters;
@@ -27,7 +28,7 @@ namespace LiftStudio
         {
             var spawnPosition = startTilePositionTransform.position;
             _spawnedStartingTile = Instantiate(startingTile, spawnPosition, Quaternion.identity);
-            TilePlacer.PlaceTile(_spawnedStartingTile, spawnPosition, Quaternion.identity);
+            tilePlacer.PlaceTile(_spawnedStartingTile, spawnPosition, Quaternion.identity);
             
             if (!PhotonNetwork.IsMasterClient) return;
             
