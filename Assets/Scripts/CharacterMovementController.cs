@@ -118,7 +118,8 @@ namespace LiftStudio
             if (photonEvent.Code != (int) PhotonEventCodes.SelectCharacterCode &&
                 photonEvent.Code != (int) PhotonEventCodes.MoveCharacterCode &&
                 photonEvent.Code != (int) PhotonEventCodes.TryPlaceCharacterCode &&
-                photonEvent.Code != (int) PhotonEventCodes.ConfirmPlaceCharacterCode) return;
+                photonEvent.Code != (int) PhotonEventCodes.ConfirmPlaceCharacterCode &&
+                photonEvent.Code != (int) PhotonEventCodes.TakeCharacterOutOfBoard) return;
 
             var data = (object[]) photonEvent.CustomData;
             var targetCharacterType = (CharacterType) data[0];
@@ -147,6 +148,11 @@ namespace LiftStudio
                     break;
                 case (int) PhotonEventCodes.ConfirmPlaceCharacterCode:
                     HandleReceiveConfirmPlaceCharacterCode(targetCharacterType, targetCharacter, data);
+                    break;
+                case (int) PhotonEventCodes.TakeCharacterOutOfBoard:
+                    targetCharacter.transform.position = gameHandler.OutOfBoardTransform.position;
+                    targetCharacter.ToggleColliderOff();
+                    gameHandler.NotifyTakeCharacterOutOfBoard(targetCharacter);
                     break;
             }
         }
@@ -292,7 +298,6 @@ namespace LiftStudio
                 _targetGridCell.UseHourglass();
                 timer.FlipHourglassTimer();
             }
-
         }
 
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
@@ -313,12 +318,13 @@ namespace LiftStudio
         private void TakeCharacterOutOfBoard(Character targetCharacter)
         {
             _startGridCell.ClearCharacter();
-            gameHandler.NotifyTakeCharacterOutOfBoard(targetCharacter);
-            targetCharacter.ToggleColliderOff();
-            targetCharacter.transform.position = gameHandler.OutOfBoardTransform.position;
+            tempCharacter.gameObject.SetActive(false);
             _startGridCell = null;
             _selectedCharacter = null;
             _targetGridCell = null;
+            
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.TakeCharacterOutOfBoard,
+                new object[] {targetCharacter.CharacterType}, RaiseEventOptionsHelper.All, SendOptions.SendReliable);
         }
 
         private void OnGameEnded()
