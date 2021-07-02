@@ -45,7 +45,8 @@ namespace LiftStudio
         public void StartGame()
         {
             if (!PhotonNetwork.IsMasterClient) return;
-            
+
+            PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.LoadLevel(1);
         }
 
@@ -131,8 +132,10 @@ namespace LiftStudio
         {
             foreach (var info in roomList)
             {
-                if (info.RemovedFromList)
+                if (info.RemovedFromList || !info.IsOpen)
                 {
+                    if (!_cachedRoomList.ContainsKey(info.Name)) return;
+                    
                     Destroy(_cachedRoomList[info.Name].gameObject);
                     _cachedRoomList.Remove(info.Name);
                 }
