@@ -322,6 +322,7 @@ namespace LiftStudio
             _startGridCell = null;
             _selectedCharacter = null;
             _targetGridCell = null;
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
             
             PhotonNetwork.RaiseEvent((int) PhotonEventCodes.TakeCharacterOutOfBoard,
                 new object[] {targetCharacter.CharacterType}, RaiseEventOptionsHelper.All, SendOptions.SendReliable);
