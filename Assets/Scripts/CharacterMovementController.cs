@@ -96,7 +96,7 @@ namespace LiftStudio
                 var targetGridCell = placedTile.Grid.GetGridCellObject(targetPosition);
                 if (targetGridCell == null) continue;
 
-                if (targetGridCell.CharacterOnTop != null && targetGridCell != _startGridCell) return;
+                if (targetGridCell.CharacterOnTop && targetGridCell != _startGridCell) return;
 
                 if (targetGridCell.Exits != null && !gameHandler.HasCharactersBeenOnPickupCells) return;
 
@@ -211,11 +211,11 @@ namespace LiftStudio
             var ray = gameCamera.ScreenPointToRay(Input.mousePosition);
             if (!Physics.Raycast(ray, out var characterHitInfo, Mathf.Infinity, characterLayerMask)) return;
 
-            _plane.Raycast(ray, out var enter);
-            _mouseStartPosition = ray.GetPoint(enter);
             var selectedCharacter = characterHitInfo.transform.GetComponent<Character>();
             if (CharactersMoving[selectedCharacter.CharacterType]) return;
-
+            
+            _plane.Raycast(ray, out var enter);
+            _mouseStartPosition = ray.GetPoint(enter);
             _selectedCharacter = selectedCharacter;
             CharactersMoving[selectedCharacter.CharacterType] = true;
             var boardTile = gameHandler.CharacterOnTileDictionary[selectedCharacter];
