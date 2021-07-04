@@ -150,6 +150,9 @@ namespace LiftStudio
                     HandleReceiveConfirmPlaceCharacterCode(targetCharacterType, targetCharacter, data);
                     break;
                 case (int) PhotonEventCodes.TakeCharacterOutOfBoard:
+                    var startTargetCharacterTile = gameHandler.CharacterOnTileDictionary[targetCharacter];
+                    var targetCharacterInitialGridCell = startTargetCharacterTile.Grid.GetGridCellObject((Vector3) data[1]);
+                    targetCharacterInitialGridCell.ClearCharacter();
                     targetCharacter.transform.position = gameHandler.OutOfBoardTransform.position;
                     targetCharacter.ToggleColliderOff();
                     gameHandler.NotifyTakeCharacterOutOfBoard(targetCharacter);
@@ -317,6 +320,7 @@ namespace LiftStudio
 
         private void TakeCharacterOutOfBoard(Character targetCharacter)
         {
+            var eventContent = new object[] {targetCharacter.CharacterType, _startGridCell.CenterWorldPosition};
             _startGridCell.ClearCharacter();
             tempCharacter.gameObject.SetActive(false);
             _startGridCell = null;
@@ -325,7 +329,7 @@ namespace LiftStudio
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
             
             PhotonNetwork.RaiseEvent((int) PhotonEventCodes.TakeCharacterOutOfBoard,
-                new object[] {targetCharacter.CharacterType}, RaiseEventOptionsHelper.All, SendOptions.SendReliable);
+                eventContent, RaiseEventOptionsHelper.All, SendOptions.SendReliable);
         }
 
         private void OnGameEnded()
