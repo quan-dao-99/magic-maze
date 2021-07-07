@@ -615,6 +615,7 @@ MonoBehaviour:
   progressLabel: {fileID: 217870423}
   roomListContainer: {fileID: 236611607}
   currentRoomInfoContainer: {fileID: 1473856847}
+  startGameButton: {fileID: 1668659623}
   roomListItemPrefab: {fileID: 3978486493151659013, guid: 8324665c12a4b43d4b425f600eb35a31, type: 3}
   roomInfosContainer: {fileID: 709738129}
   roomNameInputField: {fileID: 1530542391}

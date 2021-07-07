@@ -3,6 +3,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LiftStudio
 {
@@ -13,6 +14,7 @@ namespace LiftStudio
         [SerializeField] private GameObject progressLabel;
         [SerializeField] private GameObject roomListContainer;
         [SerializeField] private GameObject currentRoomInfoContainer;
+        [SerializeField] private Button startGameButton;
 
         [SerializeField] private RoomListItem roomListItemPrefab;
         [SerializeField] private Transform roomInfosContainer;
@@ -44,8 +46,6 @@ namespace LiftStudio
 
         public void StartGame()
         {
-            if (!PhotonNetwork.IsMasterClient) return;
-
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.LoadLevel(1);
         }
@@ -79,6 +79,7 @@ namespace LiftStudio
         public override void OnJoinedRoom()
         {
             Debug.Log("PUN Basics Tutorial/Launcher: OnJoinedRoom() called by PUN. Now this client is in a room.");
+            startGameButton.gameObject.SetActive(PhotonNetwork.IsMasterClient);
             roomListContainer.SetActive(false);
             currentRoomInfoContainer.SetActive(true);
             foreach (var player in PhotonNetwork.CurrentRoom.Players.Values)
