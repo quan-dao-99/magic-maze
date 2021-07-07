@@ -8,10 +8,12 @@ namespace LiftStudio
         MoveCharacterCode,
         TryPlaceCharacterCode,
         ConfirmPlaceCharacterCode,
-        TryTakeNewTiles,
-        ConfirmCharacterResearch,
-        NotifyCharacterPlacedOnPickupCell,
-        ConfirmAllCharactersBeenOnPickupCells,
-        TakeCharacterOutOfBoard,
+        TryTakeNewTilesCode,
+        ConfirmCharacterResearchCode,
+        NotifyCharacterPlacedOnPickupCellCode,
+        ConfirmAllCharactersBeenOnPickupCellsCode,
+        TakeCharacterOutOfBoardCode,
+        FlipHourglassCode,
+        RestartGameCode,
     }
 }

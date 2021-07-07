@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using ExitGames.Client.Photon;
+using Photon.Pun;
+using UnityEngine;
 
 namespace LiftStudio.EventChannels
 {
@@ -8,13 +9,8 @@ namespace LiftStudio.EventChannels
     {
         public void RaiseEvent()
         {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-        
-        [ContextMenu("TriggerEvent")]
-        public void TriggerEvent()
-        {
-            RaiseEvent();
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.RestartGameCode, null, RaiseEventOptionsHelper.All,
+                SendOptions.SendReliable);
         }
     }
 }

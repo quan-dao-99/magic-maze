@@ -100,14 +100,14 @@ namespace LiftStudio
 
                 if (targetGridCell.Exits != null && !gameHandler.HasCharactersBeenOnPickupCells) return;
 
-                var content = new object[] {_selectedCharacter.CharacterType, targetPosition};
-                PhotonNetwork.RaiseEvent((int) PhotonEventCodes.MoveCharacterCode, content,
-                    RaiseEventOptionsHelper.Others,
-                    SendOptions.SendReliable);
                 SelectedCharacterPosition = targetPosition + _additionalFloatPosition;
                 _targetGridCell = targetGridCell;
                 tempCharacter.position = _targetGridCell.CenterWorldPosition;
                 tempCharacter.gameObject.SetActive(true);
+                var content = new object[] {_selectedCharacter.CharacterType, targetPosition};
+                PhotonNetwork.RaiseEvent((int) PhotonEventCodes.MoveCharacterCode, content,
+                    RaiseEventOptionsHelper.Others,
+                    SendOptions.SendReliable);
             }
         }
 
@@ -115,12 +115,27 @@ namespace LiftStudio
         {
             if (photonEvent.Code >= 200) return;
 
+            if (photonEvent.Code == (int) PhotonEventCodes.FlipHourglassCode)
+            {
+                var data = (object[]) photonEvent.CustomData;
+                var targetTile = tilePlacer.AllPlacedTiles[(int) data[0]];
+                var targetGridCell = targetTile.Grid.GetGridCellObject((Vector3) data[1]);
+                targetGridCell.UseHourglass();
+                timer.FlipHourglassTimer((float) data[2]);
+                return;
+            }
+
             if (photonEvent.Code != (int) PhotonEventCodes.SelectCharacterCode &&
                 photonEvent.Code != (int) PhotonEventCodes.MoveCharacterCode &&
                 photonEvent.Code != (int) PhotonEventCodes.TryPlaceCharacterCode &&
                 photonEvent.Code != (int) PhotonEventCodes.ConfirmPlaceCharacterCode &&
-                photonEvent.Code != (int) PhotonEventCodes.TakeCharacterOutOfBoard) return;
+                photonEvent.Code != (int) PhotonEventCodes.TakeCharacterOutOfBoardCode) return;
+            
+            HandleCharacterMovementsEvent(photonEvent);
+        }
 
+        private void HandleCharacterMovementsEvent(EventData photonEvent)
+        {
             var data = (object[]) photonEvent.CustomData;
             var targetCharacterType = (CharacterType) data[0];
             Character targetCharacter = null;
@@ -149,7 +164,7 @@ namespace LiftStudio
                 case (int) PhotonEventCodes.ConfirmPlaceCharacterCode:
                     HandleReceiveConfirmPlaceCharacterCode(targetCharacterType, targetCharacter, data);
                     break;
-                case (int) PhotonEventCodes.TakeCharacterOutOfBoard:
+                case (int) PhotonEventCodes.TakeCharacterOutOfBoardCode:
                     HandleReceiveTakeCharacterOutOfBoardCode(targetCharacter, data);
                     break;
             }
@@ -292,18 +307,24 @@ namespace LiftStudio
                 TakeCharacterOutOfBoard(_selectedCharacter);
                 return;
             }
-
-            var targetPickup = _targetGridCell.Pickup;
-            var targetHourglass = _targetGridCell.Hourglass;
+            
             MoveCharacterToTargetPosition(_targetGridCell);
 
-            if (targetPickup != null &&
-                targetPickup.TargetCharacterType == _selectedCharacter.CharacterType)
+            if (_targetGridCell.Pickup != null &&
+                _targetGridCell.Pickup.TargetCharacterType == _selectedCharacter.CharacterType)
             {
                 gameHandler.NotifyCharacterPlacedOnPickupCell(_selectedCharacter.CharacterType, tempCharacter);
             }
-            else if (targetHourglass is {isAvailable: true})
+            else if (_targetGridCell.Hourglass is {isAvailable: true})
             {
+                var content = new object[]
+                {
+                    tilePlacer.AllPlacedTiles.IndexOf(_targetGridCell.Tile),
+                    _targetGridCell.CenterWorldPosition, timer.CurrentTime
+                };
+                PhotonNetwork.RaiseEvent((int) PhotonEventCodes.FlipHourglassCode, content,
+                    RaiseEventOptionsHelper.Others,
+                    SendOptions.SendReliable);
                 _targetGridCell.UseHourglass();
                 timer.FlipHourglassTimer();
             }
@@ -334,7 +355,7 @@ namespace LiftStudio
             _targetGridCell = null;
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
             
-            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.TakeCharacterOutOfBoard,
+            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.TakeCharacterOutOfBoardCode,
                 eventContent, RaiseEventOptionsHelper.All, SendOptions.SendReliable);
         }
 

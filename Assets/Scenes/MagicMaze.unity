@@ -4818,6 +4818,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   endGameMenu: {fileID: 188314371}
+  restartButton: {fileID: 405870996}
   gameEndedEventChannel: {fileID: 11400000, guid: 31aa7f2e8e9c07b48be42e90c74a6ba7, type: 2}
 --- !u!1 &1712468485
 GameObject:
