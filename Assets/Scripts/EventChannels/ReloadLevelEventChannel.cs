@@ -12,5 +12,11 @@ namespace LiftStudio.EventChannels
             PhotonNetwork.RaiseEvent((int) PhotonEventCodes.RestartGameCode, null, RaiseEventOptionsHelper.All,
                 SendOptions.SendReliable);
         }
+
+        [ContextMenu("Raise")]
+        public void Raise()
+        {
+            RaiseEvent();
+        }
     }
 }

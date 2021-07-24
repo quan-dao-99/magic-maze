@@ -1,12 +1,10 @@
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
 
 namespace LiftStudio
 {
-    public class TileStackController : MonoBehaviour, IOnEventCallback
+    public class TileStackController : MonoBehaviourPun
     {
         [SerializeField] private List<Tile> allTiles;
         [SerializeField] private Transform tileStackSpawnPosition;
@@ -30,18 +28,12 @@ namespace LiftStudio
                 allTilesCopy.RemoveAt(randomTileIndex);
             }
 
-            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.SetupTileStacksCode, content.ToArray(),
-                RaiseEventOptionsHelper.All,
-                SendOptions.SendReliable);
+            photonView.RPC("SetupTileStacksRPC", RpcTarget.All, content.ToArray());
         }
 
-        public void OnEvent(EventData photonEvent)
+        [PunRPC]
+        private void SetupTileStacksRPC(int[] indexesArray)
         {
-            if (photonEvent.Code >= 200) return;
-            
-            if (photonEvent.Code != (int) PhotonEventCodes.SetupTileStacksCode) return;
-
-            var indexesArray = (int[]) photonEvent.CustomData;
             var nextTileVerticalPosition = tileStackSpawnPosition.position;
             foreach (var randomTileIndex in indexesArray)
             {

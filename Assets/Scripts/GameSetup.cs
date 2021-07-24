@@ -1,13 +1,15 @@
 using System.Collections.Generic;
-using ExitGames.Client.Photon;
 using Photon.Pun;
-using Photon.Realtime;
 using UnityEngine;
 
 namespace LiftStudio
 {
-    public class GameSetup : MonoBehaviour, IOnEventCallback
+    public class GameSetup : MonoBehaviourPun
     {
+        [SerializeField] private Camera gameCamera;
+        [SerializeField] private MovementCardSettings movementCardSettings;
+        [SerializeField] private Transform tempCharacter;
+        [SerializeField] private Timer timer;
         [SerializeField] private TilePlacer tilePlacer;
         [SerializeField] private TileStackController tileStackController;
         [SerializeField] private Game gameHandler;
@@ -15,9 +17,22 @@ namespace LiftStudio
         [SerializeField] private StartingTile startingTile;
         [SerializeField] private Transform startTilePositionTransform;
 
-        private readonly RaiseEventOptions _raiseEventOptions = new RaiseEventOptions {Receivers = ReceiverGroup.All};
+        public static GameSetup Instance;
 
         private StartingTile _spawnedStartingTile;
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+
+            if (Instance == this) return;
+            
+            Destroy(Instance);
+            Instance = this;
+        }
 
         private void OnEnable()
         {
@@ -29,6 +44,9 @@ namespace LiftStudio
             var spawnPosition = startTilePositionTransform.position;
             _spawnedStartingTile = Instantiate(startingTile, spawnPosition, Quaternion.identity);
             tilePlacer.PlaceTile(_spawnedStartingTile, spawnPosition, Quaternion.identity);
+
+            var spawnedController = PhotonNetwork.Instantiate("CharacterMovementController", Vector3.zero, Quaternion.identity);
+            gameHandler.SetupLocalCharacterMovementController(spawnedController.GetComponent<CharacterMovementController>());
             
             if (!PhotonNetwork.IsMasterClient) return;
             
@@ -40,23 +58,24 @@ namespace LiftStudio
                 var characterPosition = _spawnedStartingTile.GetRandomCharacterSpawnPosition();
                 content.Add(index, characterPosition);
             }
-
-            PhotonNetwork.RaiseEvent((int) PhotonEventCodes.SetupPlayersCode, content, _raiseEventOptions,
-                SendOptions.SendReliable);
+            
+            photonView.RPC("SetupPlayersRPC", RpcTarget.All, content);
         }
 
-        public void OnEvent(EventData photonEvent)
+        public CharacterMovementControllerSetup GetCharacterMovementControllerSetupData()
         {
-            if (photonEvent.Code >= 200) return;
-
-            if (photonEvent.Code != (int) PhotonEventCodes.SetupPlayersCode) return;
-
-            var charactersPositionDictionary = (Dictionary<int, object>) photonEvent.CustomData;
-            foreach (var pair in charactersPositionDictionary)
+            return new CharacterMovementControllerSetup(gameCamera, movementCardSettings, tempCharacter, tilePlacer, gameHandler, timer);
+        }
+        
+        [PunRPC]
+        private void SetupPlayersRPC(Dictionary<int, object> charactersPositions)
+        {
+            foreach (var pair in charactersPositions)
             {
                 var position = (Vector3) pair.Value;
                 var spawnedCharacter = Instantiate(allCharacters[pair.Key], position, Quaternion.identity);
                 gameHandler.CharacterOnTileDictionary[spawnedCharacter] = _spawnedStartingTile;
+                gameHandler.CharacterFromTypeDictionary[spawnedCharacter.CharacterType] = spawnedCharacter;
                 _spawnedStartingTile.Grid.GetGridCellObject(position).SetCharacter(spawnedCharacter);
             }
         }

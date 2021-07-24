@@ -18,7 +18,7 @@ MonoBehaviour:
     AppIdVoice: 
     AppVersion: 
     UseNameServer: 1
-    FixedRegion: 
+    FixedRegion: ru
     Server: 
     Port: 0
     ProxyServer: 
@@ -38,6 +38,26 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - ConfirmPlaceCharacter
+  - TryPlaceCharacter
+  - SelectCharacter
+  - SetupPlayers
+  - SetupTileStacks
+  - ConfirmAllCharactersBeenOnPickupCells
+  - ConfirmCharacterResearch
+  - NotifyCharacterPlacedOnPickupCell
+  - TakeCharacterOutOfBoardRPC
+  - TryTakeNewTile
+  - ConfirmAllCharactersBeenOnPickupCellsRPC
+  - ConfirmCharacterResearchRPC
+  - ConfirmPlaceCharacterRPC
+  - FlipHourglassRPC
+  - NotifyCharacterPlacedOnPickupCellRPC
+  - SelectCharacterRPC
+  - SetupPlayersRPC
+  - SetupTileStacksRPC
+  - TryPlaceCharacterRPC
+  - TryTakeNewTileRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

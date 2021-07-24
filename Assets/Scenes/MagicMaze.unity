@@ -419,7 +419,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &105261455
 GameObject:
@@ -2587,7 +2587,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 15
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &762500135
 BoxCollider:
@@ -2999,6 +2999,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1008081579}
   - component: {fileID: 1008081578}
+  - component: {fileID: 1008081580}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -3024,7 +3025,6 @@ MonoBehaviour:
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 128
-  characterMovementController: {fileID: 1232846521}
   gameEndedEventChannel: {fileID: 11400000, guid: 31aa7f2e8e9c07b48be42e90c74a6ba7, type: 2}
   pickedUpAllItemsEventChannel: {fileID: 11400000, guid: 18e845887b21b08449b06ff57f079abe, type: 2}
   quitGameEventChannel: {fileID: 11400000, guid: ba7a73bed6d53c449b9076b3bd05d52e, type: 2}
@@ -3040,8 +3040,30 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 13
+  m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1008081580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1008081577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 3
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1065500763
 GameObject:
   m_ObjectHideFlags: 0
@@ -3472,7 +3494,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 12
+  m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1145956731
 GameObject:
@@ -3683,65 +3705,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1178091853}
   m_CullTransparentMesh: 1
---- !u!1 &1232846520
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1232846522}
-  - component: {fileID: 1232846521}
-  m_Layer: 0
-  m_Name: CharacterMovementController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1232846521
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1232846520}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ff33469dd4d04e1a922ba35c8d9d19de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameCamera: {fileID: 105326081}
-  characterLayerMask:
-    serializedVersion: 2
-    m_Bits: 8
-  wallLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
-  movementCardSettings: {fileID: 11400000, guid: 784ce25b557e9467fa59440009d4e42f, type: 2}
-  tempCharacter: {fileID: 553871466}
-  characterFloatHeight: 0.5
-  holdCursor: {fileID: 2800000, guid: 925cad5e00bb2a443b231d3e193a82d9, type: 3}
-  cursorOffset: {x: 10, y: 10}
-  tilePlacer: {fileID: 1496076703}
-  gameHandler: {fileID: 1008081578}
-  timer: {fileID: 2092642178}
-  gameEndedEventChannel: {fileID: 11400000, guid: 31aa7f2e8e9c07b48be42e90c74a6ba7, type: 2}
---- !u!4 &1232846522
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1232846520}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1235503421
 GameObject:
   m_ObjectHideFlags: 0
@@ -4234,7 +4197,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1496076702
 GameObject:
@@ -4277,7 +4240,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1567943558
 GameObject:
@@ -4289,6 +4252,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1567943559}
   - component: {fileID: 1567943560}
+  - component: {fileID: 1567943561}
   m_Layer: 0
   m_Name: GameSetup
   m_TagString: Untagged
@@ -4308,7 +4272,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1567943560
 MonoBehaviour:
@@ -4322,6 +4286,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 286f386b166c4cd9894431225659817b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameCamera: {fileID: 105326081}
+  movementCardSettings: {fileID: 11400000, guid: 784ce25b557e9467fa59440009d4e42f, type: 2}
+  tempCharacter: {fileID: 553871466}
+  timer: {fileID: 2092642178}
   tilePlacer: {fileID: 1496076703}
   tileStackController: {fileID: 1927040955}
   gameHandler: {fileID: 1008081578}
@@ -4332,6 +4300,28 @@ MonoBehaviour:
   - {fileID: 5791295880336435600, guid: 08bba6eed49294b8ea67c5798c6abeda, type: 3}
   startingTile: {fileID: 7715387498912098976, guid: 92eb24a78f8aa43199f848280c9c8f61, type: 3}
   startTilePositionTransform: {fileID: 1944541823}
+--- !u!114 &1567943561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1567943558}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 1
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1577650514
 GameObject:
   m_ObjectHideFlags: 0
@@ -5012,6 +5002,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1927040956}
   - component: {fileID: 1927040955}
+  - component: {fileID: 1927040957}
   m_Layer: 0
   m_Name: TileStackController
   m_TagString: Untagged
@@ -5053,8 +5044,30 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1927040957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1927040954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 2
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1944541822
 GameObject:
   m_ObjectHideFlags: 0
@@ -5083,7 +5096,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2043780476
 GameObject:
@@ -5237,7 +5250,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 14
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2092642178
 MonoBehaviour:
