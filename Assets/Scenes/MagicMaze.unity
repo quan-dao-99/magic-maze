@@ -1210,6 +1210,7 @@ GameObject:
   - component: {fileID: 363304091}
   - component: {fileID: 363304090}
   - component: {fileID: 363304089}
+  - component: {fileID: 363304092}
   m_Layer: 5
   m_Name: TakeNewTilesButton
   m_TagString: Untagged
@@ -1331,6 +1332,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 363304087}
   m_CullTransparentMesh: 1
+--- !u!114 &363304092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 363304087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e516218595b349d1a20645a5730b198d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controllerSetEventChannel: {fileID: 11400000, guid: 5b81152001041427383675cdfa0a2f30, type: 2}
 --- !u!1 &405870994
 GameObject:
   m_ObjectHideFlags: 0
@@ -3025,6 +3039,7 @@ MonoBehaviour:
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 128
+  controllerSetEventChannel: {fileID: 11400000, guid: 5b81152001041427383675cdfa0a2f30, type: 2}
   gameEndedEventChannel: {fileID: 11400000, guid: 31aa7f2e8e9c07b48be42e90c74a6ba7, type: 2}
   pickedUpAllItemsEventChannel: {fileID: 11400000, guid: 18e845887b21b08449b06ff57f079abe, type: 2}
   quitGameEventChannel: {fileID: 11400000, guid: ba7a73bed6d53c449b9076b3bd05d52e, type: 2}
@@ -4287,7 +4302,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameCamera: {fileID: 105326081}
-  movementCardSettings: {fileID: 11400000, guid: 784ce25b557e9467fa59440009d4e42f, type: 2}
+  movementCardsSetupCollection: {fileID: 11400000, guid: 110206c51471f4b04b4003b82eb518fa, type: 2}
   tempCharacter: {fileID: 553871466}
   timer: {fileID: 2092642178}
   tilePlacer: {fileID: 1496076703}

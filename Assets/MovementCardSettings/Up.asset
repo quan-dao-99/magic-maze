@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1f0ed41a903a439ebbc49790c2f48f67, type: 3}
-  m_Name: All
+  m_Name: Up
   m_EditorClassIdentifier: 
-  movementDirection: -1
-  canUseElevator: 1
-  canUsePortal: 1
-  canUseResearch: 1
+  movementDirection: 8
+  canUseElevator: 0
+  canUsePortal: 0
+  canUseResearch: 0

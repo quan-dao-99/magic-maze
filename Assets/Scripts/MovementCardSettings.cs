@@ -9,6 +9,7 @@ namespace LiftStudio
         [EnumFlag] public MovementDirection movementDirection;
         public bool canUseElevator;
         public bool canUsePortal;
+        public bool canUseResearch;
 
         public List<Vector3> GetAllPossibleMovementVector()
         {

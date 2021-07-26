@@ -1,13 +1,15 @@
 using System.Collections.Generic;
+using System.Linq;
 using Photon.Pun;
 using UnityEngine;
+using SystemRandom = System.Random;
 
 namespace LiftStudio
 {
     public class GameSetup : MonoBehaviourPun
     {
         [SerializeField] private Camera gameCamera;
-        [SerializeField] private MovementCardSettings movementCardSettings;
+        [SerializeField] private MovementCardsSetupCollection movementCardsSetupCollection;
         [SerializeField] private Transform tempCharacter;
         [SerializeField] private Timer timer;
         [SerializeField] private TilePlacer tilePlacer;
@@ -19,19 +21,30 @@ namespace LiftStudio
 
         public static GameSetup Instance;
 
+        private int _cardSetupIndex;
         private StartingTile _spawnedStartingTile;
+        private List<MovementCardSettings> _runtimeMovementCardSettingsList;
 
         private void Awake()
         {
-            if (Instance == null)
+            if (Instance != this)
             {
+                Destroy(Instance);
                 Instance = this;
             }
 
-            if (Instance == this) return;
-            
-            Destroy(Instance);
-            Instance = this;
+            if (!PhotonNetwork.IsMasterClient) return;
+
+            for (var index = 0; index < movementCardsSetupCollection.allSetups.Count; index++)
+            {
+                var movementCardsSetup = movementCardsSetupCollection.allSetups[index];
+                if (movementCardsSetup.playerCount != PhotonNetwork.CurrentRoom.PlayerCount) continue;
+
+                _cardSetupIndex = index;
+                var random = new SystemRandom();
+                _runtimeMovementCardSettingsList =
+                    new List<MovementCardSettings>(movementCardsSetup.cardSet.OrderBy(item => random.Next()));
+            }
         }
 
         private void OnEnable()
@@ -45,8 +58,7 @@ namespace LiftStudio
             _spawnedStartingTile = Instantiate(startingTile, spawnPosition, Quaternion.identity);
             tilePlacer.PlaceTile(_spawnedStartingTile, spawnPosition, Quaternion.identity);
 
-            var spawnedController = PhotonNetwork.Instantiate("CharacterMovementController", Vector3.zero, Quaternion.identity);
-            gameHandler.SetupLocalCharacterMovementController(spawnedController.GetComponent<CharacterMovementController>());
+            photonView.RPC("GetMovementCardSettingsRPC", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.UserId);
             
             if (!PhotonNetwork.IsMasterClient) return;
             
@@ -62,8 +74,9 @@ namespace LiftStudio
             photonView.RPC("SetupPlayersRPC", RpcTarget.All, content);
         }
 
-        public CharacterMovementControllerSetup GetCharacterMovementControllerSetupData()
+        public CharacterMovementControllerSetup GetCharacterMovementControllerSetupData(int cardSetupIndex, int cardIndex)
         {
+            var movementCardSettings = movementCardsSetupCollection.allSetups[cardSetupIndex].cardSet[cardIndex];
             return new CharacterMovementControllerSetup(gameCamera, movementCardSettings, tempCharacter, tilePlacer, gameHandler, timer);
         }
         
@@ -78,6 +91,27 @@ namespace LiftStudio
                 gameHandler.CharacterFromTypeDictionary[spawnedCharacter.CharacterType] = spawnedCharacter;
                 _spawnedStartingTile.Grid.GetGridCellObject(position).SetCharacter(spawnedCharacter);
             }
+        }
+
+        [PunRPC]
+        private void GetMovementCardSettingsRPC(string senderUserId)
+        {
+            var nextMovementCard = _runtimeMovementCardSettingsList[0];
+            var cardIndex = movementCardsSetupCollection.allSetups[_cardSetupIndex].cardSet.IndexOf(nextMovementCard);
+            var content = new object[] {senderUserId, _cardSetupIndex, cardIndex};
+            photonView.RPC("ReceivedMovementCardSettingsRPC", RpcTarget.All, content );
+            _runtimeMovementCardSettingsList.RemoveAt(0);
+        }
+
+        [PunRPC]
+        private void ReceivedMovementCardSettingsRPC(string userId, int cardSetupIndex, int cardIndex)
+        {
+            if (userId != PhotonNetwork.LocalPlayer.UserId) return;
+            
+            var content = new object[] {cardSetupIndex, cardIndex};
+            var spawnedController = PhotonNetwork.Instantiate("CharacterMovementController", Vector3.zero,
+                Quaternion.identity, data: content);
+            gameHandler.SetupLocalCharacterMovementController(spawnedController.GetComponent<CharacterMovementController>());
         }
 
         private void OnDisable()

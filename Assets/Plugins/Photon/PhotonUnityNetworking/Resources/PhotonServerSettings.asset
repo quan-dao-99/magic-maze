@@ -58,6 +58,8 @@ MonoBehaviour:
   - SetupTileStacksRPC
   - TryPlaceCharacterRPC
   - TryTakeNewTileRPC
+  - GetMovementCardSettingsRPC
+  - ReceivedMovementCardSettingsRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

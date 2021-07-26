@@ -16,6 +16,7 @@ namespace LiftStudio
         [SerializeField] private Transform outOfBoardTransform;
         [SerializeField] private LayerMask groundLayerMask;
 
+        [SerializeField] private LocalControllerSetEventChannel controllerSetEventChannel;
         [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
         [SerializeField] private PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel;
         [SerializeField] private QuitGameEventChannel quitGameEventChannel;
@@ -83,6 +84,7 @@ namespace LiftStudio
         public void SetupLocalCharacterMovementController(CharacterMovementController controller)
         {
             _characterMovementController = controller;
+            controllerSetEventChannel.RaiseEvent(controller);
         }
         
         private void SendConfirmCharacterResearchEvent(KeyValuePair<Character, Tile> pair, bool shouldPlaceNewTile)
