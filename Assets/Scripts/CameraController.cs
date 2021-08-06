@@ -10,11 +10,13 @@ namespace LiftStudio
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
 
         [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
+        [SerializeField] private CameraRotatedEventChannel cameraRotatedEventChannel;
 
         [Space]
         [SerializeField] private float normalSpeed;
         [SerializeField] private float fastSpeed;
         [SerializeField] private float movementTime;
+        [SerializeField] private float rotateTime;
         [SerializeField] private float rotationAmount;
 
         private float _movementSpeed;
@@ -49,7 +51,7 @@ namespace LiftStudio
             HandleCameraRotation();
 
             OwnTransform.position = Vector3.Lerp(OwnTransform.position, _newPosition, Time.deltaTime * movementTime);
-            OwnTransform.rotation = Quaternion.Lerp(OwnTransform.rotation, _newRotation, Time.deltaTime * movementTime);
+            OwnTransform.rotation = Quaternion.Lerp(OwnTransform.rotation, _newRotation, Time.deltaTime * rotateTime);
         }
 
         private void HandleCameraMovement()
@@ -83,10 +85,12 @@ namespace LiftStudio
             if (Input.GetKey(KeyCode.Q))
             {
                 _newRotation *= Quaternion.Euler(Vector3.up * rotationAmount);
+                cameraRotatedEventChannel.RaiseEvent(rotationAmount, rotateTime);
             }
             else if (Input.GetKey(KeyCode.E))
             {
                 _newRotation *= Quaternion.Euler(Vector3.up * -rotationAmount);
+                cameraRotatedEventChannel.RaiseEvent(-rotationAmount, rotateTime);
             }
         }
 
@@ -94,7 +98,7 @@ namespace LiftStudio
         {
             if (Input.mouseScrollDelta.y == 0f) return;
 
-            var scrollDirection = (int) Mathf.Sign(Input.mouseScrollDelta.y);
+            var scrollDirection = (int)Mathf.Sign(Input.mouseScrollDelta.y);
             var distanceFromBase = (_newZoom - transform.position).sqrMagnitude;
 
             if (distanceFromBase <= 10f && scrollDirection == 1) return;

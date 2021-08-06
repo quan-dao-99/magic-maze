@@ -17,7 +17,9 @@ namespace LiftStudio
         [SerializeField] private Game gameHandler;
         [SerializeField] private List<Character> allCharacters;
         [SerializeField] private StartingTile startingTile;
+        [SerializeField] private MovementCard movementCard;
         [SerializeField] private Transform startTilePositionTransform;
+        [SerializeField] private Transform movementCardContainerParent;
 
         public static GameSetup Instance;
 
@@ -111,7 +113,18 @@ namespace LiftStudio
             var content = new object[] {cardSetupIndex, cardIndex};
             var spawnedController = PhotonNetwork.Instantiate("CharacterMovementController", Vector3.zero,
                 Quaternion.identity, data: content);
+            photonView.RPC("InstantiateMovementCardsRPC", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber,
+                cardSetupIndex, cardIndex);
             gameHandler.SetupLocalCharacterMovementController(spawnedController.GetComponent<CharacterMovementController>());
+        }
+        
+        [PunRPC]
+        private void InstantiateMovementCardsRPC(int actorNumber, int cardSetupIndex, int cardIndex)
+        {
+            var targetPlayerNickname = PhotonNetwork.CurrentRoom.Players[actorNumber].NickName;
+            var movementCardSettings = movementCardsSetupCollection.allSetups[cardSetupIndex].cardSet[cardIndex];
+            var spawnedCardContainer = Instantiate(movementCard, movementCardContainerParent);
+            spawnedCardContainer.SetMovementCardSettings(targetPlayerNickname, movementCardSettings);
         }
 
         private void OnDisable()
