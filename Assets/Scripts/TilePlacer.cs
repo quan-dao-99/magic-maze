@@ -7,6 +7,11 @@ namespace LiftStudio
     {
         public List<Tile> AllPlacedTiles { get; private set; }
 
+        public const int CellSize = 1;
+        
+        private const int Width = 4;
+        private const int Height = 4;
+
         private void Awake()
         {
             AllPlacedTiles = new List<Tile>();
@@ -18,7 +23,7 @@ namespace LiftStudio
             var tileTransform = tileToPlace.transform;
             tileTransform.position = placePosition;
             tileTransform.rotation = placeRotation;
-            tileToPlace.SetupGrid();
+            tileToPlace.SetupGrid(Width, Height, CellSize);
         }
     }
 }

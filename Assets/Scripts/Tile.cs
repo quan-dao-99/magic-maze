@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using LiftStudio.EventChannels;
 using UnityEngine;
@@ -20,16 +19,17 @@ namespace LiftStudio
 
         private Transform OwnTransform => transform;
 
-        private const int Width = 4;
-        private const int Height = 4;
-        private const int CellSize = 1;
+        private int _width;
+        private int _height;
         private Vector3 _originPosition = Vector3.zero;
 
-        public void SetupGrid()
+        public void SetupGrid(int width, int height, int cellSize)
         {
+            _width = width;
+            _height = height;
             _originPosition = tileVisualTransform.position +
                               OwnTransform.rotation * tileVisualTransform.localRotation * new Vector3(-2, 0, -2);
-            Grid = new CustomGrid<GridCell>(OwnTransform, tileVisualTransform, _originPosition, Width, Height, CellSize,
+            Grid = new CustomGrid<GridCell>(OwnTransform, tileVisualTransform, _originPosition, width, height, cellSize,
                 (grid, x, y) =>
                 {
                     var portalSetup = portals.Find(portal => portal.gridPosition.x == x && portal.gridPosition.y == y);
@@ -69,6 +69,40 @@ namespace LiftStudio
                     return new GridCell(grid, x, y, targetPortal, targetElevator, targetResearchPoint, exitLists,
                         pickup, hourglass, pickedUpAllItemsEventChannel, this);
                 });
+        }
+
+        public GridCell GetTargetCharacterPortalGridCell(CharacterType targetCharacterType)
+        {
+            for (var w = 0; w < _width; w++)
+            {
+                for (var h = 0; h < _height; h++)
+                {
+                    var gridCell = Grid.GetGridCellObject(w, h);
+                    if (gridCell.Portal == null) continue;
+                    
+                    if (gridCell.Portal.targetCharacterType != targetCharacterType) continue;
+
+                    return gridCell;
+                }
+            }
+            return null;
+        }
+        
+        public GridCell GetOtherElevatorEndGridCell(GridCell initialGridCell)
+        {
+            for (var w = 0; w < _width; w++)
+            {
+                for (var h = 0; h < _height; h++)
+                {
+                    var gridCell = Grid.GetGridCellObject(w, h);
+                    if (gridCell.Elevator == null) continue;
+                    if (gridCell == initialGridCell) continue;
+                    if (gridCell.Elevator != initialGridCell.Elevator) continue;
+
+                    return gridCell;
+                }
+            }
+            return null;
         }
 
         private void OnDestroy()

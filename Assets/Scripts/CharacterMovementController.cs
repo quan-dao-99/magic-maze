@@ -48,6 +48,7 @@ namespace LiftStudio
         }
 
         private readonly Dictionary<CharacterType, Vector3> _photonPositionDictionary = new Dictionary<CharacterType, Vector3>();
+        private readonly List<GridCell> _allPossibleCells = new List<GridCell>();
 
         private void Awake()
         {
@@ -153,6 +154,7 @@ namespace LiftStudio
             CharactersMoving[selectedCharacter.CharacterType] = true;
             var boardTile = _gameHandler.CharacterOnTileDictionary[selectedCharacter];
             _startGridCell = boardTile.Grid.GetGridCellObject(SelectedCharacterPosition);
+            GetAllPossibleTargetGridCells();
             SelectedCharacterPosition += _additionalFloatPosition;
             Cursor.SetCursor(holdCursor, cursorOffset, CursorMode.Auto);
             var content = new object[] {_selectedCharacter.CharacterType};
@@ -163,51 +165,12 @@ namespace LiftStudio
         {
             if (float.IsNegativeInfinity(_targetGridCell.CenterWorldPosition.x)) return;
 
-            if (_targetGridCell == _startGridCell)
+            if (!_allPossibleCells.Contains(_targetGridCell))
             {
-                MoveCharacterToTargetPosition(_targetGridCell);
-                return;
-            }
-
-            var direction = _targetGridCell.CenterWorldPosition -
-                            _startGridCell.CenterWorldPosition;
-            var normalizedDirection = direction.normalized;
-            var movementDirection = MovementCardSettings.GetAllPossibleMovementVector();
-            if (MovementCardSettings.canUsePortal && !_gameHandler.HasCharactersBeenOnPickupCells)
-            {
-                var targetPortal = _targetGridCell.Portal;
-                if (targetPortal != null && targetPortal.targetCharacterType == _selectedCharacter.CharacterType)
-                {
-                    MoveCharacterToTargetPosition(_targetGridCell);
-                    return;
-                }
-            }
-
-            if (MovementCardSettings.canUseElevator)
-            {
-                if (_startGridCell.Elevator != null && _targetGridCell.Elevator != null &&
-                    _startGridCell.Elevator == _targetGridCell.Elevator)
-                {
-                    MoveCharacterToTargetPosition(_targetGridCell);
-                    return;
-                }
-            }
-
-            _selectedCharacter.ToggleColliderOff();
-            if (!movementDirection.Contains(normalizedDirection) ||
-                Physics.Raycast(_startGridCell.CenterWorldPosition, normalizedDirection, direction.magnitude,
-                    wallLayerMask) ||
-                Physics.Raycast(_startGridCell.CenterWorldPosition, normalizedDirection,
-                    direction.magnitude,
-                    characterLayerMask))
-            {
-                _selectedCharacter.ToggleColliderOn();
                 MoveCharacterToTargetPosition(_startGridCell);
                 return;
             }
-
-            _selectedCharacter.ToggleColliderOn();
-
+            
             if (_targetGridCell.Exits != null &&
                 _targetGridCell.Exits.Exists(exit => exit.targetCharacterType == _selectedCharacter.CharacterType))
             {
@@ -237,6 +200,7 @@ namespace LiftStudio
 
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
         {
+            _allPossibleCells.Clear();
             var targetTileIndex = _tilePlacer.AllPlacedTiles.IndexOf(targetGridCell.Tile);
             var startTileIndex = _tilePlacer.AllPlacedTiles.IndexOf(_startGridCell.Tile);
             var content = new object[]
@@ -252,6 +216,7 @@ namespace LiftStudio
         {
             var eventContent = new object[] {targetCharacter.CharacterType, _startGridCell.CenterWorldPosition};
             _startGridCell.ClearCharacter();
+            _allPossibleCells.Clear();
             _tempCharacter.gameObject.SetActive(false);
             _startGridCell = null;
             _selectedCharacter = null;
@@ -259,6 +224,64 @@ namespace LiftStudio
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
             
             photonView.RPC("TakeCharacterOutOfBoardRPC", RpcTarget.All, eventContent);
+        }
+        
+        private void GetAllPossibleTargetGridCells()
+        {
+            _allPossibleCells.Add(_startGridCell);
+            var possibleMovementDirection = MovementCardSettings.GetAllPossibleMovementVector();
+            foreach (var movementDirection in possibleMovementDirection)
+            {
+                var startGridCell = _startGridCell;
+                var nextGridCellPosition = startGridCell.CenterWorldPosition + movementDirection;
+                for (var placedTileIndex = 0; placedTileIndex < _tilePlacer.AllPlacedTiles.Count; placedTileIndex++)
+                {
+                    var placedTile = _tilePlacer.AllPlacedTiles[placedTileIndex];
+                    if (MovementCardSettings.canUsePortal)
+                    {
+                        var portalGridCell =
+                            placedTile.GetTargetCharacterPortalGridCell(_selectedCharacter.CharacterType);
+                        if (portalGridCell != null && !_allPossibleCells.Contains(portalGridCell))
+                        {
+                            _allPossibleCells.Add(portalGridCell);
+                        }
+                    }
+
+                    if (MovementCardSettings.canUseElevator)
+                    {
+                        if (_startGridCell.Elevator != null &&
+                            placedTile == _gameHandler.CharacterOnTileDictionary[_selectedCharacter])
+                        {
+                            var otherEndElevatorGridCell = placedTile.GetOtherElevatorEndGridCell(_startGridCell);
+                            if (otherEndElevatorGridCell != null &&
+                                !_allPossibleCells.Contains(otherEndElevatorGridCell))
+                            {
+                                _allPossibleCells.Add(otherEndElevatorGridCell);
+                            }
+                        }
+                    }
+
+                    do
+                    {
+                        var nextGridCell = placedTile.Grid.GetGridCellObject(nextGridCellPosition);
+                        if (nextGridCell == null) break;
+
+                        if (!Physics.Raycast(startGridCell.CenterWorldPosition, movementDirection, TilePlacer.CellSize,
+                            wallLayerMask) && nextGridCell.CharacterOnTop == null)
+                        {
+                            _allPossibleCells.Add(nextGridCell);
+                            placedTileIndex = -1;
+                            startGridCell = nextGridCell;
+                            nextGridCellPosition = startGridCell.CenterWorldPosition + movementDirection;
+                            continue;
+                        }
+
+                        break;
+                    } while (true);
+                }
+            }
+
+            Debug.Log($"Count: {_allPossibleCells.Count}");
         }
         
         [PunRPC]
@@ -296,7 +319,6 @@ namespace LiftStudio
         private void ConfirmPlaceCharacterRPC(object[] data)
         {
             var targetCharacterType = (CharacterType) data[0];
-            Debug.Log(CharactersMoving[targetCharacterType]);
             if (!CharactersMoving[targetCharacterType]) return;
             
             var targetCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
@@ -311,7 +333,6 @@ namespace LiftStudio
             targetGridCell.SetCharacter(targetCharacter);
             _gameHandler.CharacterOnTileDictionary[targetCharacter] = targetGridCell.Tile;
             targetCharacter.transform.position = targetGridCell.CenterWorldPosition;
-            Debug.Log(targetGridCell.CenterWorldPosition);
 
             if (!_selectedCharacter || targetCharacterType != _selectedCharacter.CharacterType) return;
 
