@@ -78,13 +78,11 @@ namespace LiftStudio
 
         private void OnAllMovableGridCellsSet(List<GridCell> allMovableGridCells)
         {
-            if (allMovableGridCells.Count == 0)
+            if (allMovableGridCells.Count == 0 || !allMovableGridCells.Contains(this))
             {
                 _highlighterHandler.OnDehighlighted();
                 return;
             }
-
-            if (!allMovableGridCells.Contains(this)) return;
 
             _highlighterHandler.OnHighlighted(this);
         }
