@@ -16,6 +16,7 @@ namespace LiftStudio
         [SerializeField] private float characterMoveSpeed;
 
         [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
+        [SerializeField] private AllMovableGridCellsSetEventChannel allMovableGridCellsSetEventChannel;
         
         public Dictionary<CharacterType, bool> CharactersMoving { get; } = new Dictionary<CharacterType, bool>
         {
@@ -48,7 +49,7 @@ namespace LiftStudio
         }
 
         private readonly Dictionary<CharacterType, Vector3> _photonPositionDictionary = new Dictionary<CharacterType, Vector3>();
-        private readonly List<GridCell> _allPossibleCells = new List<GridCell>();
+        private readonly List<GridCell> _allMovableGridCells = new List<GridCell>();
 
         private void Awake()
         {
@@ -165,7 +166,7 @@ namespace LiftStudio
         {
             if (float.IsNegativeInfinity(_targetGridCell.CenterWorldPosition.x)) return;
 
-            if (!_allPossibleCells.Contains(_targetGridCell))
+            if (!_allMovableGridCells.Contains(_targetGridCell))
             {
                 MoveCharacterToTargetPosition(_startGridCell);
                 return;
@@ -200,7 +201,8 @@ namespace LiftStudio
 
         private void MoveCharacterToTargetPosition(GridCell targetGridCell)
         {
-            _allPossibleCells.Clear();
+            _allMovableGridCells.Clear();
+            allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
             var targetTileIndex = _tilePlacer.AllPlacedTiles.IndexOf(targetGridCell.Tile);
             var startTileIndex = _tilePlacer.AllPlacedTiles.IndexOf(_startGridCell.Tile);
             var content = new object[]
@@ -216,7 +218,8 @@ namespace LiftStudio
         {
             var eventContent = new object[] {targetCharacter.CharacterType, _startGridCell.CenterWorldPosition};
             _startGridCell.ClearCharacter();
-            _allPossibleCells.Clear();
+            _allMovableGridCells.Clear();
+            allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
             _tempCharacter.gameObject.SetActive(false);
             _startGridCell = null;
             _selectedCharacter = null;
@@ -228,22 +231,28 @@ namespace LiftStudio
         
         private void GetAllPossibleTargetGridCells()
         {
-            _allPossibleCells.Add(_startGridCell);
+            _allMovableGridCells.Add(_startGridCell);
             var possibleMovementDirection = MovementCardSettings.GetAllPossibleMovementVector();
+            var sortedPlacedTiles = new List<Tile>(_tilePlacer.AllPlacedTiles);
+            sortedPlacedTiles.Sort((tile, nextTile) =>
+            {
+                if (tile == _gameHandler.CharacterOnTileDictionary[_selectedCharacter]) return -1;
+
+                return 0;
+            });
             foreach (var movementDirection in possibleMovementDirection)
             {
                 var startGridCell = _startGridCell;
                 var nextGridCellPosition = startGridCell.CenterWorldPosition + movementDirection;
-                for (var placedTileIndex = 0; placedTileIndex < _tilePlacer.AllPlacedTiles.Count; placedTileIndex++)
+                foreach (var placedTile in sortedPlacedTiles)
                 {
-                    var placedTile = _tilePlacer.AllPlacedTiles[placedTileIndex];
                     if (MovementCardSettings.canUsePortal)
                     {
                         var portalGridCell =
                             placedTile.GetTargetCharacterPortalGridCell(_selectedCharacter.CharacterType);
-                        if (portalGridCell != null && !_allPossibleCells.Contains(portalGridCell))
+                        if (portalGridCell != null && !_allMovableGridCells.Contains(portalGridCell))
                         {
-                            _allPossibleCells.Add(portalGridCell);
+                            _allMovableGridCells.Add(portalGridCell);
                         }
                     }
 
@@ -254,9 +263,9 @@ namespace LiftStudio
                         {
                             var otherEndElevatorGridCell = placedTile.GetOtherElevatorEndGridCell(_startGridCell);
                             if (otherEndElevatorGridCell != null &&
-                                !_allPossibleCells.Contains(otherEndElevatorGridCell))
+                                !_allMovableGridCells.Contains(otherEndElevatorGridCell))
                             {
-                                _allPossibleCells.Add(otherEndElevatorGridCell);
+                                _allMovableGridCells.Add(otherEndElevatorGridCell);
                             }
                         }
                     }
@@ -269,8 +278,7 @@ namespace LiftStudio
                         if (!Physics.Raycast(startGridCell.CenterWorldPosition, movementDirection, TilePlacer.CellSize,
                             wallLayerMask) && nextGridCell.CharacterOnTop == null)
                         {
-                            _allPossibleCells.Add(nextGridCell);
-                            placedTileIndex = -1;
+                            _allMovableGridCells.Add(nextGridCell);
                             startGridCell = nextGridCell;
                             nextGridCellPosition = startGridCell.CenterWorldPosition + movementDirection;
                             continue;
@@ -281,7 +289,7 @@ namespace LiftStudio
                 }
             }
 
-            Debug.Log($"Count: {_allPossibleCells.Count}");
+            allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
         }
         
         [PunRPC]

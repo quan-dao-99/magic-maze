@@ -7,7 +7,7 @@ namespace LiftStudio
 {
     public class GridCell : IDisposable
     {
-        public Vector3 CenterWorldPosition => _grid.GetCellCenterWorldPosition(_x, _y);
+        public Vector3 CenterWorldPosition { get; }
         public Character CharacterOnTop { get; private set; }
         public Portal Portal { get; }
         public Elevator Elevator { get; }
@@ -18,17 +18,15 @@ namespace LiftStudio
         public Tile Tile { get; }
 
         private readonly PickedUpAllItemsEventChannel _pickedUpAllItemsEventChannel;
-        private readonly CustomGrid<GridCell> _grid;
-        private readonly int _x;
-        private readonly int _y;
+        private readonly AllMovableGridCellsSetEventChannel _allMovableGridCellsSetEventChannel;
+        private readonly GridCellHighlighterHandler _highlighterHandler;
 
-        public GridCell(CustomGrid<GridCell> grid, int x, int y, Portal portal, Elevator elevator,
+        public GridCell(Tile tile, CustomGrid<GridCell> grid, int x, int y, Portal portal, Elevator elevator,
             ResearchPoint researchPoint, List<Exit> exits, Pickup pickup, Hourglass hourglass,
-            PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel, Tile tile)
+            PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel,
+            AllMovableGridCellsSetEventChannel allMovableGridCellsSetEventChannel,
+            GridCellHighlighterHandler highlighterHandler)
         {
-            _grid = grid;
-            _x = x;
-            _y = y;
             Portal = portal;
             Elevator = elevator;
             ResearchPoint = researchPoint;
@@ -36,11 +34,19 @@ namespace LiftStudio
             Pickup = pickup;
             Hourglass = hourglass;
             Tile = tile;
+            CenterWorldPosition = grid.GetCellCenterWorldPosition(x, y);
 
-            if (Portal == null) return;
+            if (Portal != null)
+            {
+                _pickedUpAllItemsEventChannel = pickedUpAllItemsEventChannel;
 
-            _pickedUpAllItemsEventChannel = pickedUpAllItemsEventChannel;
-            pickedUpAllItemsEventChannel.AllItemsPickedUp += OnAllItemsPickedUp;
+                pickedUpAllItemsEventChannel.AllItemsPickedUp += OnAllItemsPickedUp;
+            }
+
+            _highlighterHandler = highlighterHandler;
+            _allMovableGridCellsSetEventChannel = allMovableGridCellsSetEventChannel;
+            
+            allMovableGridCellsSetEventChannel.AllMovableGridCellsSet += OnAllMovableGridCellsSet;
         }
 
         public void SetCharacter(Character targetCharacter)
@@ -70,11 +76,25 @@ namespace LiftStudio
             Portal.spriteRenderer.color = fadedColor;
         }
 
+        private void OnAllMovableGridCellsSet(List<GridCell> allMovableGridCells)
+        {
+            if (allMovableGridCells.Count == 0)
+            {
+                _highlighterHandler.OnDehighlighted();
+                return;
+            }
+
+            if (!allMovableGridCells.Contains(this)) return;
+
+            _highlighterHandler.OnHighlighted(this);
+        }
+
         public void Dispose()
         {
             if (_pickedUpAllItemsEventChannel == null) return;
 
             _pickedUpAllItemsEventChannel.AllItemsPickedUp -= OnAllItemsPickedUp;
+            _allMovableGridCellsSetEventChannel.AllMovableGridCellsSet -= OnAllMovableGridCellsSet;
         }
     }
 }

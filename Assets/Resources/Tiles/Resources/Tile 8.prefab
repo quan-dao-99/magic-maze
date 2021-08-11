@@ -2978,8 +2978,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6b1f17709e642259db2ef647779286d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickedUpAllItemsEventChannel: {fileID: 11400000, guid: 18e845887b21b08449b06ff57f079abe, type: 2}
-  tileVisualTransform: {fileID: 1499477291975839629}
   portals:
   - usedMarker: {fileID: 2295891489265478719}
     portalSpriteRenderer: {fileID: 7535462808051074520}
@@ -3003,6 +3001,10 @@ MonoBehaviour:
     gridPosition: {x: -1, y: -1}
     usedMarker: {fileID: 0}
     hourglassSpriteRenderer: {fileID: 0}
+  tileVisualTransform: {fileID: 1499477291975839629}
+  gridCellHighlighterPool: {fileID: 0}
+  allMovableGridCellsSetEventChannel: {fileID: 11400000, guid: 27d4f6d4dc39f4bd89a073fbbda21807, type: 2}
+  pickedUpAllItemsEventChannel: {fileID: 11400000, guid: 18e845887b21b08449b06ff57f079abe, type: 2}
 --- !u!1 &8823035640842650355
 GameObject:
   m_ObjectHideFlags: 0
