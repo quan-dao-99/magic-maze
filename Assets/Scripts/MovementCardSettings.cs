@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace LiftStudio
 {
-    [CreateAssetMenu(fileName = "MovementCardSettings", menuName = "Move Card Settings")]
+    [CreateAssetMenu(fileName = "MovementCardSettings", menuName = "Movement Card Settings")]
     public class MovementCardSettings : ScriptableObject
     {
         [EnumFlag] public MovementDirection movementDirection;
