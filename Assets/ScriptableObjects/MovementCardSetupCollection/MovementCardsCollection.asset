@@ -18,6 +18,10 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 784ce25b557e9467fa59440009d4e42f, type: 2}
   - playerCount: 2
     cardSet:
+    - {fileID: 11400000, guid: caa79115723ef2b45b5760da38b8111e, type: 2}
+    - {fileID: 11400000, guid: 1677a518d3f64ce4099529da7ba3709d, type: 2}
+  - playerCount: 4
+    cardSet:
     - {fileID: 11400000, guid: ddb1f0b5f4afb4ded94cd7c928c19dcf, type: 2}
     - {fileID: 11400000, guid: b549a4871b9c64bb88acc950b522c686, type: 2}
     - {fileID: 11400000, guid: c8b44111264d64a398322c9ff0aef4ff, type: 2}
