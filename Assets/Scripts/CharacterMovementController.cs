@@ -262,6 +262,7 @@ namespace LiftStudio
                         var portalGridCell =
                             placedTile.GetTargetCharacterPortalGridCell(_selectedCharacter.CharacterType);
                         if (portalGridCell != null && portalGridCell.CharacterOnTop == null &&
+                            !_gameHandler.HasCharactersBeenOnPickupCells &&
                             !_allMovableGridCells.Contains(portalGridCell))
                         {
                             _allMovableGridCells.Add(portalGridCell);
