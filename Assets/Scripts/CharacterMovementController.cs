@@ -384,6 +384,7 @@ namespace LiftStudio
             targetCharacterInitialGridCell.ClearCharacter();
             targetCharacter.transform.position = _gameHandler.OutOfBoardTransform.position;
             targetCharacter.ToggleColliderOff();
+            CharactersMoving[targetCharacterType] = false;
             _localPlayerController.TryGetAllPossibleTargetGridCells();
             _gameHandler.NotifyTakeCharacterOutOfBoard(targetCharacter);
         }
