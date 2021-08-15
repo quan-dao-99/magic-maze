@@ -216,7 +216,7 @@ namespace LiftStudio
             var content = new object[]
             {
                 _selectedCharacter.CharacterType, targetTileIndex, targetGridCell.CenterWorldPosition, startTileIndex,
-                _startGridCell.CenterWorldPosition
+                _startGridCell.CenterWorldPosition, PhotonNetwork.LocalPlayer.UserId
             };
             photonView.RPC("TryPlaceCharacterRPC", RpcTarget.MasterClient, content);
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
@@ -305,10 +305,11 @@ namespace LiftStudio
             allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
         }
 
-        private void ConfirmPlaceCharacter(CharacterType placedCharacterType, GridCell targetGridCell)
+        private void ConfirmPlaceCharacter(string senderUserId, CharacterType placedCharacterType, GridCell targetGridCell)
         {
             if (_selectedCharacter == null) return;
-            if (_selectedCharacter.CharacterType != placedCharacterType)
+            if (_selectedCharacter.CharacterType != placedCharacterType ||
+                senderUserId != PhotonNetwork.LocalPlayer.UserId)
             {
                 TryGetAllPossibleTargetGridCells();
                 return;
@@ -360,18 +361,18 @@ namespace LiftStudio
             if (!CharactersMoving[targetCharacterType]) return;
             
             var targetCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
-
             var targetTile = _tilePlacer.AllPlacedTiles[(int) data[1]];
             var targetGridCell = targetTile.Grid.GetGridCellObject((Vector3) data[2]);
             var startTile = _tilePlacer.AllPlacedTiles[(int) data[3]];
             var startGridCell = startTile.Grid.GetGridCellObject((Vector3) data[4]);
+            var senderUserId = (string) data[5];
 
             CharactersMoving[targetCharacterType] = false;
             startGridCell.ClearCharacter();
             targetGridCell.SetCharacter(targetCharacter);
             _gameHandler.CharacterOnTileDictionary[targetCharacter] = targetGridCell.Tile;
             targetCharacter.transform.position = targetGridCell.CenterWorldPosition;
-            _localPlayerController.ConfirmPlaceCharacter(targetCharacterType, targetGridCell);
+            _localPlayerController.ConfirmPlaceCharacter(senderUserId, targetCharacterType, targetGridCell);
         }
         
         [PunRPC]
