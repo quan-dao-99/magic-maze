@@ -18,5 +18,10 @@ namespace LiftStudio
             
             gameObject.SetActive(false);
         }
+
+        private void OnDestroy()
+        {
+            controllerSetEventChannel.LocalCharacterMovementControllerSet -= OnControllerSet;
+        }
     }
 }
