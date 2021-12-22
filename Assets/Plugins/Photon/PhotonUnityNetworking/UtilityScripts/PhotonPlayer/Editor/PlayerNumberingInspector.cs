@@ -8,13 +8,9 @@
 // <author>developer@exitgames.com</author>
 // --------------------------------------------------------------------------------------------------------------------
 
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-
-using Photon.Pun;
 using Photon.Realtime;
+using UnityEditor;
+using UnityEngine;
 
 namespace Photon.Pun.UtilityScripts
 {

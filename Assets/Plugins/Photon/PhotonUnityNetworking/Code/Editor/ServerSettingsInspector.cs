@@ -9,15 +9,10 @@
 // ----------------------------------------------------------------------------
 
 using System;
+using ExitGames.Client.Photon;
+using Photon.Realtime;
 using UnityEditor;
 using UnityEngine;
-
-using Photon.Pun;
-
-using ExitGames.Client.Photon;
-using System.Collections.Generic;
-using System.Reflection;
-using Photon.Realtime;
 
 namespace Photon.Pun
 {

@@ -13,9 +13,6 @@ using UnityEngine;
 
 namespace Photon.Pun.UtilityScripts
 {
-    using System;
-
-
     /// <summary>
     ///     Represents the cull area used for network culling.
     /// </summary>

@@ -9,6 +9,11 @@
 // <author>developer@exitgames.com</author>
 // ----------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using UnityEngine;
+
 #if UNITY_2017_4_OR_NEWER
 #define SUPPORTED_UNITY
 #endif
@@ -18,13 +23,6 @@
 
 namespace Photon.Realtime
 {
-    using System;
-    using UnityEngine;
-    using System.Collections.Generic;
-    using System.Text.RegularExpressions;
-    using ExitGames.Client.Photon;
-
-
     /// <summary>
     /// Creates a instance of the Account Service to register Photon Cloud accounts.
     /// </summary>
