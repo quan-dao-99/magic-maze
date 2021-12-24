@@ -8,6 +8,14 @@
 // <author>developer@exitgames.com</author>
 // ----------------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Networking;
+
 #pragma warning disable 618 // Deprecation warnings
 
 
@@ -20,18 +28,6 @@
 
 namespace Photon.Realtime
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using UnityEditor;
-    using UnityEngine;
-
-    using System.IO;
-    using System.Text;
-    using UnityEngine.Networking;
-
-
     [InitializeOnLoad]
     public static class PhotonEditorUtils
     {
@@ -203,7 +199,9 @@ namespace Photon.Realtime
 		/// <param name="go">The GameObject to check</param>
 		public static bool IsPrefab(GameObject go)
 		{
-            #if UNITY_2018_3_OR_NEWER
+            #if UNITY_2021_2_OR_NEWER
+            return UnityEditor.SceneManagement.PrefabStageUtility.GetPrefabStage(go) != null || EditorUtility.IsPersistent(go);
+            #elif UNITY_2018_3_OR_NEWER
             return UnityEditor.Experimental.SceneManagement.PrefabStageUtility.GetPrefabStage(go) != null || EditorUtility.IsPersistent(go);
             #else
             return EditorUtility.IsPersistent(go);

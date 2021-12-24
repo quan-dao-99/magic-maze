@@ -10,12 +10,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
-using UnityEngine;
-
-using Photon.Pun;
+using ExitGames.Client.Photon;
 using Photon.Realtime;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
+using UnityEngine;
 
 namespace Photon.Pun.UtilityScripts
 {

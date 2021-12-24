@@ -12,8 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-
+using Photon.Realtime;
 using UnityEditor;
 using UnityEditor.Callbacks;
 using UnityEditor.Compilation;
@@ -21,9 +20,6 @@ using UnityEngine;
 
 namespace Photon.Pun
 {
-    using Realtime;
-
-
     public class PunWizardText
     {
         public string WindowTitle = "PUN Wizard";

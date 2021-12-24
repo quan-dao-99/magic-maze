@@ -9,14 +9,9 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
-using System;
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
-
-using Photon.Pun;
 using Photon.Realtime;
+using UnityEditor;
 
 namespace Photon.Pun.UtilityScripts
 {
