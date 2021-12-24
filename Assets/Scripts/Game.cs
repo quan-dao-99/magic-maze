@@ -23,6 +23,11 @@ namespace LiftStudio
 
         public Transform OutOfBoardTransform => outOfBoardTransform;
 
+        public Dictionary<CharacterType, bool> CharactersMoving { get; } = new Dictionary<CharacterType, bool>
+        {
+            { CharacterType.Axe, false }, { CharacterType.Bow, false },
+            { CharacterType.Potion, false }, { CharacterType.Sword, false }
+        };
         public Dictionary<CharacterType, Character> CharacterFromTypeDictionary { get; } =
             new Dictionary<CharacterType, Character>();
         public Dictionary<Character, Tile> CharacterOnTileDictionary { get; } =
@@ -30,8 +35,6 @@ namespace LiftStudio
 
         public bool HasCharactersBeenOnPickupCells { get; private set; }
 
-        private CharacterMovementController _characterMovementController;
-        
         private void OnEnable()
         {
             PhotonNetwork.AddCallbackTarget(this);
@@ -83,13 +86,12 @@ namespace LiftStudio
         
         public void SetupLocalCharacterMovementController(CharacterMovementController controller)
         {
-            _characterMovementController = controller;
             controllerSetEventChannel.RaiseEvent(controller);
         }
         
         private void SendConfirmCharacterResearchEvent(KeyValuePair<Character, Tile> pair, bool shouldPlaceNewTile)
         {
-            var content = new object[] {pair.Key.CharacterType, shouldPlaceNewTile};
+            var content = new object[] {pair.Key.Type, shouldPlaceNewTile};
             photonView.RPC("ConfirmCharacterResearchRPC", RpcTarget.Others, content);
         }
 
@@ -114,7 +116,7 @@ namespace LiftStudio
                     continue;
                 }
 
-                if (gridCellResearchPoint.targetCharacterType != pair.Key.CharacterType) continue;
+                if (gridCellResearchPoint.targetCharacterType != pair.Key.Type) continue;
 
                 tilePlacer.PlaceTile(tileStackController.GameTileStacks.Pop(),
                     attachPoint.position,
@@ -130,7 +132,7 @@ namespace LiftStudio
         {
             foreach (var pair in CharacterOnTileDictionary)
             {
-                if (pair.Key.CharacterType != characterType) continue;
+                if (pair.Key.Type != characterType) continue;
                 
                 var characterGridCell = pair.Value.Grid.GetGridCellObject(pair.Key.transform.position);
                 var gridCellResearchPoint = characterGridCell.ResearchPoint;
@@ -152,7 +154,7 @@ namespace LiftStudio
         [PunRPC]
         private void NotifyCharacterPlacedOnPickupCellRPC(CharacterType characterType, Vector3 tempCharacterPosition)
         {
-            if (_characterMovementController.CharactersMoving.Any(pair =>
+            if (CharactersMoving.Any(pair =>
                 pair.Key != characterType && pair.Value))
             {
                 HasCharactersBeenOnPickupCells = false;
@@ -170,7 +172,7 @@ namespace LiftStudio
                     : targetCharacterPosition;
                 var characterGridCell = tile.Grid.GetGridCellObject(finalCharacterPosition);
                 if (characterGridCell.Pickup == null ||
-                    characterGridCell.Pickup.TargetCharacterType != character.CharacterType)
+                    characterGridCell.Pickup.TargetCharacterType != character.Type)
                 {
                     allCharacterOnPickupCells = false;
                 }

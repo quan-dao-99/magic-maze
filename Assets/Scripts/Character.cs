@@ -7,7 +7,7 @@ namespace LiftStudio
         [SerializeField] private CharacterType characterType;
         [SerializeField] private Collider characterCollider;
 
-        public CharacterType CharacterType => characterType;
+        public CharacterType Type => characterType;
 
         public void ToggleColliderOff()
         {

@@ -44,8 +44,8 @@ namespace LiftStudio
 
                 _cardSetupIndex = index;
                 var random = new SystemRandom();
-                _runtimeMovementCardSettingsList =
-                    new List<MovementCardSettings>(movementCardsSetup.cardSet.OrderBy(item => random.Next()));
+                var randomMovementCards = movementCardsSetup.cardSet.OrderBy(item => random.Next());
+                _runtimeMovementCardSettingsList = new List<MovementCardSettings>(randomMovementCards);
             }
         }
 
@@ -90,7 +90,7 @@ namespace LiftStudio
                 var position = (Vector3) pair.Value;
                 var spawnedCharacter = Instantiate(allCharacters[pair.Key], position, Quaternion.identity);
                 gameHandler.CharacterOnTileDictionary[spawnedCharacter] = _spawnedStartingTile;
-                gameHandler.CharacterFromTypeDictionary[spawnedCharacter.CharacterType] = spawnedCharacter;
+                gameHandler.CharacterFromTypeDictionary[spawnedCharacter.Type] = spawnedCharacter;
                 _spawnedStartingTile.Grid.GetGridCellObject(position).SetCharacter(spawnedCharacter);
             }
         }
@@ -101,7 +101,7 @@ namespace LiftStudio
             var nextMovementCard = _runtimeMovementCardSettingsList[0];
             var cardIndex = movementCardsSetupCollection.allSetups[_cardSetupIndex].cardSet.IndexOf(nextMovementCard);
             var content = new object[] {senderUserId, _cardSetupIndex, cardIndex};
-            photonView.RPC("ReceivedMovementCardSettingsRPC", RpcTarget.All, content );
+            photonView.RPC("ReceivedMovementCardSettingsRPC", RpcTarget.All, content);
             _runtimeMovementCardSettingsList.RemoveAt(0);
         }
 
