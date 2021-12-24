@@ -9,14 +9,6 @@
 // ----------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using ExitGames.Client.Photon;
-using Photon.Realtime;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
 #pragma warning disable 1587
 /// \defgroup publicApi Public API
 /// \brief Groups the most important classes that you need to understand early on.
@@ -31,6 +23,13 @@ using UnityEngine.SceneManagement;
 
 namespace Photon.Pun
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using ExitGames.Client.Photon;
+    using UnityEngine;
+    using UnityEngine.SceneManagement;
+    using Photon.Realtime;
     using SupportClassPun = ExitGames.Client.Photon.SupportClass;
 
 

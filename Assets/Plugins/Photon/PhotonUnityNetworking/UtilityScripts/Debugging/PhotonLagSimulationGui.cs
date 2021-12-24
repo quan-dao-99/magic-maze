@@ -11,8 +11,11 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
-using ExitGames.Client.Photon;
 using UnityEngine;
+
+using Photon.Pun;
+using Photon.Realtime;
+using ExitGames.Client.Photon;
 
 namespace Photon.Pun.UtilityScripts
 {

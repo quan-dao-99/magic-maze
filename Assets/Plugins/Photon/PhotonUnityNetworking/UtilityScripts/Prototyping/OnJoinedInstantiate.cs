@@ -9,9 +9,11 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using Photon.Realtime;
 using UnityEngine;
 using UnityEngine.Serialization;
+
+using Photon.Realtime;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif

@@ -9,11 +9,12 @@
 // ----------------------------------------------------------------------------
 
 
-using UnityEditor;
-using UnityEngine;
-
 namespace Photon.Pun
 {
+    using UnityEditor;
+    using UnityEngine;
+
+
     [CustomEditor(typeof(PhotonTransformView))]
     public class PhotonTransformViewEditor : Editor
     {

@@ -9,11 +9,13 @@
 // ----------------------------------------------------------------------------
 
 
-using ExitGames.Client.Photon;
-using Photon.Realtime;
-
 namespace Photon.Pun
 {
+    using UnityEngine;
+    using Photon.Realtime;
+    using ExitGames.Client.Photon;
+
+
     /// <summary>
     /// Internally used class, containing de/serialization method for PUN specific classes.
     /// </summary>

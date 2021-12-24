@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-using System;
-using UnityEditor;
 using UnityEngine;
+using UnityEditor;
+
+using System;
 
 namespace Photon.Pun
 {

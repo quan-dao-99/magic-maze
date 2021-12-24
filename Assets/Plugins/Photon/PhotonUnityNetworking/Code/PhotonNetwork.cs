@@ -9,19 +9,21 @@
 // ----------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using ExitGames.Client.Photon;
-using Photon.Realtime;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using Debug = UnityEngine.Debug;
-
 namespace Photon.Pun
 {
-#if UNITY_EDITOR
+    using System.Diagnostics;
+    using UnityEngine;
+    using System;
+    using System.Linq;
+    using System.Collections.Generic;
+    using ExitGames.Client.Photon;
+    using UnityEngine.SceneManagement;
+
+    using Photon.Realtime;
+    using Debug = UnityEngine.Debug;
+    using Hashtable = ExitGames.Client.Photon.Hashtable;
+
+    #if UNITY_EDITOR
     using UnityEditor;
     using System.IO;
     #endif
@@ -62,7 +64,7 @@ namespace Photon.Pun
     public static partial class PhotonNetwork
     {
         /// <summary>Version number of PUN. Used in the AppVersion, which separates your playerbase in matchmaking.</summary>
-        public const string PunVersion = "2.40";
+        public const string PunVersion = "2.38";
 
         /// <summary>Version number of your game. Setting this updates the AppVersion, which separates your playerbase in matchmaking.</summary>
         /// <remarks>

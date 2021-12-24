@@ -9,9 +9,10 @@
 // ----------------------------------------------------------------------------
 
 using System;
-using Photon.Realtime;
 using UnityEditor;
 using UnityEngine;
+
+using Photon.Realtime;
 
 namespace Photon.Pun
 {

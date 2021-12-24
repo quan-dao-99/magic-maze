@@ -9,18 +9,19 @@
 // ----------------------------------------------------------------------------
 
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using ExitGames.Client.Photon;
-using Photon.Realtime;
-using UnityEngine;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
-
 namespace Photon.Pun
 {
+    using System;
+    using System.Linq;
+    using UnityEngine;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Reflection;
+
+    using ExitGames.Client.Photon;
+    using Photon.Realtime;
+
+    using Hashtable = ExitGames.Client.Photon.Hashtable;
     using SupportClassPun = ExitGames.Client.Photon.SupportClass;
 
     public static partial class PhotonNetwork
@@ -302,9 +303,7 @@ namespace Photon.Pun
                     }
                     // For non-instantiated objects (scene objects) - reset the view
                     else
-                    {
                         view.ResetPhotonView(true);
-                    }
                 }
 
                 foreach (GameObject go in instantiatedGos)

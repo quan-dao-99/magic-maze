@@ -6,17 +6,19 @@
 // <author>developer@photonengine.com</author>
 // ----------------------------------------------------------------------------
 
-using System;
-using ExitGames.Client.Photon;
-
 #if UNITY_2017_4_OR_NEWER
 #define SUPPORTED_UNITY
 #endif
 
 namespace Photon.Realtime
 {
-#if SUPPORTED_UNITY || NETFX_CORE
-#endif
+    using System;
+    using ExitGames.Client.Photon;
+
+    #if SUPPORTED_UNITY || NETFX_CORE
+    using Hashtable = ExitGames.Client.Photon.Hashtable;
+    using SupportClass = ExitGames.Client.Photon.SupportClass;
+    #endif
 
 
     /// <summary>

@@ -9,13 +9,15 @@
 // ----------------------------------------------------------------------------
 
 
-using System.Collections.Generic;
-using Photon.Realtime;
-using UnityEditor;
-using UnityEngine;
-
 namespace Photon.Pun
 {
+	using System.Collections.Generic;
+    using Realtime;
+    using UnityEditor;
+	using UnityEngine;
+    using Debug = UnityEngine.Debug;
+
+
     [InitializeOnLoad]
 	public class PhotonViewHandler : EditorWindow
 	{

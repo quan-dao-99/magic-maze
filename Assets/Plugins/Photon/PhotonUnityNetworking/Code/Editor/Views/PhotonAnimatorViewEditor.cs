@@ -9,13 +9,14 @@
 // ----------------------------------------------------------------------------
 
 
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.Animations;
-using UnityEngine;
-
 namespace Photon.Pun
 {
+    using System.Collections.Generic;
+    using UnityEditor;
+    using UnityEditor.Animations;
+    using UnityEngine;
+
+
     [CustomEditor(typeof(PhotonAnimatorView))]
     public class PhotonAnimatorViewEditor : MonoBehaviourPunEditor
     {
