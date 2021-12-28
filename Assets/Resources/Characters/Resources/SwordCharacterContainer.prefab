@@ -51,6 +51,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -144,7 +145,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterType: 1
   characterCollider: {fileID: 7585275354934386213}
-  photonView: {fileID: 292458671614128022}
 --- !u!114 &292458671614128022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +160,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 2
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
