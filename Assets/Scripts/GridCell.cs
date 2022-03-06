@@ -21,12 +21,18 @@ namespace LiftStudio
         private readonly AllMovableGridCellsSetEventChannel _allMovableGridCellsSetEventChannel;
         private readonly GridCellHighlighterHandler _highlighterHandler;
 
+        private readonly int _x;
+        private readonly int _y;
+
         public GridCell(Tile tile, CustomGrid<GridCell> grid, int x, int y, Portal portal, Elevator elevator,
             ResearchPoint researchPoint, List<Exit> exits, Pickup pickup, Hourglass hourglass,
             PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel,
             AllMovableGridCellsSetEventChannel allMovableGridCellsSetEventChannel,
             GridCellHighlighterHandler highlighterHandler)
         {
+            _x = x;
+            _y = y;
+            
             Portal = portal;
             Elevator = elevator;
             ResearchPoint = researchPoint;
@@ -78,6 +84,7 @@ namespace LiftStudio
 
         private void OnAllMovableGridCellsSet(List<GridCell> allMovableGridCells)
         {
+            Debug.Log($"Position: {_x}, {_y}. Contains: {allMovableGridCells.Contains(this)}");
             if (allMovableGridCells.Count == 0 || !allMovableGridCells.Contains(this))
             {
                 _highlighterHandler.OnDehighlighted();

@@ -1,5 +1,6 @@
 using LiftStudio.Pools;
 using LiftStudio.Pools.PoolItems;
+using UnityEngine;
 
 namespace LiftStudio
 {
@@ -16,6 +17,8 @@ namespace LiftStudio
 
         public void OnHighlighted(GridCell targetGridCell)
         {
+            if (_gridCellHighlighter != null) return;
+
             _gridCellHighlighter = _gridCellHighlighterPool.Get(_gridCellHighlighterPool.transform);
             _gridCellHighlighter.SetPosition(targetGridCell.CenterWorldPosition);
             _gridCellHighlighter.gameObject.SetActive(true);
