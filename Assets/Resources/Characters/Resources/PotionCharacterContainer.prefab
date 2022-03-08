@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 2173717505071969950}
   - component: {fileID: 1110001451718698694}
   - component: {fileID: 4573535164153732983}
-  - component: {fileID: 1928456032598610014}
-  - component: {fileID: 145859238019405969}
   m_Layer: 3
   m_Name: PotionCharacterContainer
   m_TagString: Untagged
@@ -63,45 +61,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterType: 2
   characterCollider: {fileID: 1110001451718698694}
---- !u!114 &1928456032598610014
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2747018864299012840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 2
-  OwnershipTransfer: 1
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 145859238019405969}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
---- !u!114 &145859238019405969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2747018864299012840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 0
-  m_SynchronizeScale: 0
-  m_UseLocal: 0
 --- !u!1 &4094720283467838957
 GameObject:
   m_ObjectHideFlags: 0
