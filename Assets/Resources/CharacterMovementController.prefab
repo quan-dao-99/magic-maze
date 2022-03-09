@@ -53,7 +53,7 @@ MonoBehaviour:
   characterFloatHeight: 0.5
   holdCursor: {fileID: 2800000, guid: 925cad5e00bb2a443b231d3e193a82d9, type: 3}
   cursorOffset: {x: 10, y: 10}
-  characterMoveSpeed: 5
+  characterMoveSpeed: 10
   gameEndedEventChannel: {fileID: 11400000, guid: 31aa7f2e8e9c07b48be42e90c74a6ba7, type: 2}
   allMovableGridCellsSetEventChannel: {fileID: 11400000, guid: 27d4f6d4dc39f4bd89a073fbbda21807, type: 2}
 --- !u!114 &-4797766465262062478

@@ -101,6 +101,7 @@ namespace LiftStudio
 
         private void LateUpdate()
         {
+            if (!_selectedCharacter) return;
             if (!photonView.IsMine)
             {
                 SelectedCharacterPosition = Vector3.MoveTowards(SelectedCharacterPosition,
@@ -109,8 +110,6 @@ namespace LiftStudio
             }
 
             if (EventSystem.current.IsPointerOverGameObject()) return;
-
-            if (!_selectedCharacter) return;
 
             if (!Input.GetMouseButton(0)) return;
 
