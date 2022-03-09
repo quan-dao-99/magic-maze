@@ -34,6 +34,8 @@ namespace LiftStudio
 
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
 
+        private Vector3 _otherCharacterTargetPosition;
+
         private static GameSetup GameSetupInstance => GameSetup.Instance;
         private static CharacterMovementController _localPlayerController;
 
@@ -43,7 +45,6 @@ namespace LiftStudio
             set => _selectedCharacter.transform.position = value;
         }
 
-        // private readonly Dictionary<CharacterType, Vector3> _photonPositionDictionary = new Dictionary<CharacterType, Vector3>();
         private readonly List<GridCell> _allMovableGridCells = new List<GridCell>();
 
         private void Awake()
@@ -102,17 +103,11 @@ namespace LiftStudio
         {
             if (!photonView.IsMine)
             {
-                /*foreach (var positionInfo in _photonPositionDictionary)
-                {
-                    if (!_gameHandler.CharactersMoving[positionInfo.Key]) continue;
-
-                    var targetCharacter = _gameHandler.CharacterFromTypeDictionary[positionInfo.Key];
-                    targetCharacter.transform.position = Vector3.MoveTowards(targetCharacter.transform.position,
-                        positionInfo.Value, characterMoveSpeed * Time.deltaTime);
-                }*/
+                SelectedCharacterPosition = Vector3.MoveTowards(SelectedCharacterPosition,
+                    _otherCharacterTargetPosition, characterMoveSpeed * Time.deltaTime);
                 return;
             }
-            
+
             if (EventSystem.current.IsPointerOverGameObject()) return;
 
             if (!_selectedCharacter) return;
@@ -148,7 +143,7 @@ namespace LiftStudio
 
             var selectedCharacter = characterHitInfo.transform.GetComponent<Character>();
             if (_gameHandler.CharactersMoving[selectedCharacter.Type]) return;
-            
+
             _plane.Raycast(ray, out var enter);
             _mouseStartPosition = ray.GetPoint(enter);
             _selectedCharacter = selectedCharacter;
@@ -158,7 +153,7 @@ namespace LiftStudio
             TryGetAllPossibleTargetGridCells();
             SelectedCharacterPosition += _additionalFloatPosition;
             Cursor.SetCursor(holdCursor, cursorOffset, CursorMode.Auto);
-            var content = new object[] {_selectedCharacter.Type};
+            var content = new object[] { _selectedCharacter.Type };
             photonView.RPC("SelectCharacterRPC", RpcTarget.Others, content);
         }
 
@@ -171,7 +166,7 @@ namespace LiftStudio
                 MoveCharacterToTargetPosition(_startGridCell);
                 return;
             }
-            
+
             if (_targetGridCell.Exits != null &&
                 _targetGridCell.Exits.Exists(exit => exit.targetCharacterType == _selectedCharacter.Type))
             {
@@ -184,7 +179,7 @@ namespace LiftStudio
             {
                 _gameHandler.NotifyCharacterPlacedOnPickupCell(_selectedCharacter.Type, _tempCharacter);
             }
-            else if (_targetGridCell.Hourglass is {isAvailable: true})
+            else if (_targetGridCell.Hourglass is { isAvailable: true })
             {
                 var content = new object[]
                 {
@@ -195,7 +190,7 @@ namespace LiftStudio
                 _targetGridCell.UseHourglass();
                 _timer.FlipHourglassTimer();
             }
-            
+
             MoveCharacterToTargetPosition(_targetGridCell);
         }
 
@@ -216,7 +211,7 @@ namespace LiftStudio
 
         private void TakeCharacterOutOfBoard(Character targetCharacter)
         {
-            var eventContent = new object[] {targetCharacter.Type, _startGridCell.CenterWorldPosition};
+            var eventContent = new object[] { targetCharacter.Type, _startGridCell.CenterWorldPosition };
             _startGridCell.ClearCharacter();
             _allMovableGridCells.Clear();
             allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
@@ -225,14 +220,14 @@ namespace LiftStudio
             _selectedCharacter = null;
             _targetGridCell = null;
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
-            
+
             photonView.RPC("TakeCharacterOutOfBoardRPC", RpcTarget.All, eventContent);
         }
-        
+
         private void TryGetAllPossibleTargetGridCells()
         {
             if (_selectedCharacter == null) return;
-            
+
             _allMovableGridCells.Clear();
             _allMovableGridCells.Add(_startGridCell);
             var possibleMovementDirection = MovementCardSettings.GetAllPossibleMovementVector();
@@ -281,7 +276,7 @@ namespace LiftStudio
                         if (nextGridCell == null) break;
 
                         if (!Physics.Raycast(startGridCell.CenterWorldPosition, movementDirection, TilePlacer.CellSize,
-                            wallLayerMask) && nextGridCell.CharacterOnTop == null)
+                                wallLayerMask) && nextGridCell.CharacterOnTop == null)
                         {
                             _allMovableGridCells.Add(nextGridCell);
                             startGridCell = nextGridCell;
@@ -297,7 +292,8 @@ namespace LiftStudio
             allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
         }
 
-        private void ConfirmPlaceCharacter(string senderUserId, CharacterType placedCharacterType, GridCell targetGridCell)
+        private void ConfirmPlaceCharacter(string senderUserId, CharacterType placedCharacterType,
+            GridCell targetGridCell)
         {
             if (_selectedCharacter == null) return;
             if (_selectedCharacter.Type != placedCharacterType ||
@@ -314,7 +310,7 @@ namespace LiftStudio
             _allMovableGridCells.Clear();
             allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
         }
-        
+
         [PunRPC]
         private void SelectCharacterRPC(CharacterType targetCharacterType)
         {
@@ -329,11 +325,11 @@ namespace LiftStudio
         [PunRPC]
         private void TryPlaceCharacterRPC(object[] data)
         {
-            var targetCharacterType = (CharacterType) data[0];
+            var targetCharacterType = (CharacterType)data[0];
             if (!_gameHandler.CharactersMoving[targetCharacterType]) return;
 
-            var targetTileIndex = (int) data[1];
-            var targetTilePosition = (Vector3) data[2];
+            var targetTileIndex = (int)data[1];
+            var targetTilePosition = (Vector3)data[2];
 
             var targetCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
             var targetTile = _tilePlacer.AllPlacedTiles[targetTileIndex];
@@ -347,17 +343,16 @@ namespace LiftStudio
         [PunRPC]
         private void ConfirmPlaceCharacterRPC(object[] data)
         {
-            var targetCharacterType = (CharacterType) data[0];
+            var targetCharacterType = (CharacterType)data[0];
             if (!_gameHandler.CharactersMoving[targetCharacterType]) return;
 
             var targetCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
-            var targetTile = _tilePlacer.AllPlacedTiles[(int) data[1]];
-            var targetGridCell = targetTile.Grid.GetGridCellObject((Vector3) data[2]);
-            var startTile = _tilePlacer.AllPlacedTiles[(int) data[3]];
-            var startGridCell = startTile.Grid.GetGridCellObject((Vector3) data[4]);
-            var senderUserId = (string) data[5];
+            var targetTile = _tilePlacer.AllPlacedTiles[(int)data[1]];
+            var targetGridCell = targetTile.Grid.GetGridCellObject((Vector3)data[2]);
+            var startTile = _tilePlacer.AllPlacedTiles[(int)data[3]];
+            var startGridCell = startTile.Grid.GetGridCellObject((Vector3)data[4]);
+            var senderUserId = (string)data[5];
 
-            // _photonPositionDictionary.Remove(targetCharacterType);
             _gameHandler.CharactersMoving[targetCharacterType] = false;
             startGridCell.ClearCharacter();
             targetGridCell.SetCharacter(targetCharacter);
@@ -365,7 +360,7 @@ namespace LiftStudio
             targetCharacter.transform.position = targetGridCell.CenterWorldPosition;
             _localPlayerController.ConfirmPlaceCharacter(senderUserId, targetCharacterType, targetGridCell);
         }
-        
+
         [PunRPC]
         private void TakeCharacterOutOfBoardRPC(CharacterType targetCharacterType, Vector3 gridCellPosition)
         {
@@ -394,31 +389,24 @@ namespace LiftStudio
         {
             enabled = false;
         }
-        
+
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.IsWriting)
             {
                 if (!_selectedCharacter) return;
                 var characterType = _selectedCharacter.Type;
-                // if (_photonPositionDictionary.ContainsKey(characterType) &&
-                //     _selectedCharacter.transform.position == _photonPositionDictionary[characterType])
-                // {
-                //     return;
-                // }
-                
                 stream.SendNext(characterType);
                 stream.SendNext(_selectedCharacter.transform.position);
                 return;
             }
-            
-            var targetCharacterType = (CharacterType) stream.ReceiveNext();
-            var targetCharacterPosition = (Vector3) stream.ReceiveNext();
+
+            var targetCharacterType = (CharacterType)stream.ReceiveNext();
+            var targetCharacterPosition = (Vector3)stream.ReceiveNext();
             if (!_gameHandler.CharactersMoving[targetCharacterType]) return;
 
-            // _photonPositionDictionary[targetCharacterType] = targetCharacterPosition;
             _selectedCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
-            SelectedCharacterPosition = targetCharacterPosition;
+            _otherCharacterTargetPosition = targetCharacterPosition;
         }
 
         private void OnDisable()
