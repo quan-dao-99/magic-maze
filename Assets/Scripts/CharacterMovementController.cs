@@ -43,7 +43,7 @@ namespace LiftStudio
             set => _selectedCharacter.transform.position = value;
         }
 
-        private readonly Dictionary<CharacterType, Vector3> _photonPositionDictionary = new Dictionary<CharacterType, Vector3>();
+        // private readonly Dictionary<CharacterType, Vector3> _photonPositionDictionary = new Dictionary<CharacterType, Vector3>();
         private readonly List<GridCell> _allMovableGridCells = new List<GridCell>();
 
         private void Awake()
@@ -102,14 +102,14 @@ namespace LiftStudio
         {
             if (!photonView.IsMine)
             {
-                foreach (var positionInfo in _photonPositionDictionary)
+                /*foreach (var positionInfo in _photonPositionDictionary)
                 {
                     if (!_gameHandler.CharactersMoving[positionInfo.Key]) continue;
 
                     var targetCharacter = _gameHandler.CharacterFromTypeDictionary[positionInfo.Key];
                     targetCharacter.transform.position = Vector3.MoveTowards(targetCharacter.transform.position,
                         positionInfo.Value, characterMoveSpeed * Time.deltaTime);
-                }
+                }*/
                 return;
             }
             
@@ -357,7 +357,7 @@ namespace LiftStudio
             var startGridCell = startTile.Grid.GetGridCellObject((Vector3) data[4]);
             var senderUserId = (string) data[5];
 
-            _photonPositionDictionary.Remove(targetCharacterType);
+            // _photonPositionDictionary.Remove(targetCharacterType);
             _gameHandler.CharactersMoving[targetCharacterType] = false;
             startGridCell.ClearCharacter();
             targetGridCell.SetCharacter(targetCharacter);
@@ -401,11 +401,11 @@ namespace LiftStudio
             {
                 if (!_selectedCharacter) return;
                 var characterType = _selectedCharacter.Type;
-                if (_photonPositionDictionary.ContainsKey(characterType) &&
-                    _selectedCharacter.transform.position == _photonPositionDictionary[characterType])
-                {
-                    return;
-                }
+                // if (_photonPositionDictionary.ContainsKey(characterType) &&
+                //     _selectedCharacter.transform.position == _photonPositionDictionary[characterType])
+                // {
+                //     return;
+                // }
                 
                 stream.SendNext(characterType);
                 stream.SendNext(_selectedCharacter.transform.position);
@@ -416,7 +416,9 @@ namespace LiftStudio
             var targetCharacterPosition = (Vector3) stream.ReceiveNext();
             if (!_gameHandler.CharactersMoving[targetCharacterType]) return;
 
-            _photonPositionDictionary[targetCharacterType] = targetCharacterPosition;
+            // _photonPositionDictionary[targetCharacterType] = targetCharacterPosition;
+            _selectedCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
+            SelectedCharacterPosition = targetCharacterPosition;
         }
 
         private void OnDisable()
