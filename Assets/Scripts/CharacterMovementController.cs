@@ -35,6 +35,7 @@ namespace LiftStudio
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
 
         private Vector3 _otherCharacterTargetPosition;
+        private Queue<Vector3> _otherCharacterPositions;
 
         private static GameSetup GameSetupInstance => GameSetup.Instance;
         private static CharacterMovementController _localPlayerController;
@@ -105,6 +106,10 @@ namespace LiftStudio
             if (!photonView.IsMine)
             {
                 if (!_gameHandler.CharactersMoving[_selectedCharacter.Type]) return;
+                if (SelectedCharacterPosition == _otherCharacterTargetPosition)
+                {
+                    _otherCharacterTargetPosition = _otherCharacterPositions.Dequeue();
+                }
 
                 SelectedCharacterPosition = Vector3.MoveTowards(SelectedCharacterPosition,
                     _otherCharacterTargetPosition, characterMoveSpeed * Time.deltaTime);
@@ -407,7 +412,7 @@ namespace LiftStudio
             if (!_gameHandler.CharactersMoving[targetCharacterType]) return;
 
             _selectedCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
-            _otherCharacterTargetPosition = targetCharacterPosition;
+            _otherCharacterPositions.Enqueue(targetCharacterPosition);
         }
 
         private void OnDisable()
