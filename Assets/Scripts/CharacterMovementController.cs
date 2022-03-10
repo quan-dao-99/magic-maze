@@ -104,6 +104,8 @@ namespace LiftStudio
             if (!_selectedCharacter) return;
             if (!photonView.IsMine)
             {
+                if (!_gameHandler.CharactersMoving[_selectedCharacter.Type]) return;
+
                 SelectedCharacterPosition = Vector3.MoveTowards(SelectedCharacterPosition,
                     _otherCharacterTargetPosition, characterMoveSpeed * Time.deltaTime);
                 return;
