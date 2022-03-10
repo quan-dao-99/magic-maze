@@ -106,6 +106,7 @@ namespace LiftStudio
             if (!photonView.IsMine)
             {
                 if (!_gameHandler.CharactersMoving[_selectedCharacter.Type]) return;
+                if (_otherCharacterPositions.Count == 0) return;
                 if (SelectedCharacterPosition == _otherCharacterTargetPosition)
                 {
                     _otherCharacterTargetPosition = _otherCharacterPositions.Dequeue();
