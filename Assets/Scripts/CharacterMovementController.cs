@@ -35,7 +35,7 @@ namespace LiftStudio
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
 
         private Vector3 _otherCharacterTargetPosition;
-        private Queue<Vector3> _otherCharacterPositions;
+        private readonly Queue<Vector3> _otherCharacterPositions = new Queue<Vector3>();
 
         private static GameSetup GameSetupInstance => GameSetup.Instance;
         private static CharacterMovementController _localPlayerController;
