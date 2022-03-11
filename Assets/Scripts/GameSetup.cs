@@ -78,7 +78,16 @@ namespace LiftStudio
 
         public CharacterMovementControllerSetup GetCharacterMovementControllerSetupData(int cardSetupIndex, int cardIndex)
         {
-            var movementCardSettings = movementCardsSetupCollection.allSetups[cardSetupIndex].cardSet[cardIndex];
+            List<MovementCardSettings> movementCardSettings;
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            {
+                movementCardSettings = movementCardsSetupCollection.allSetups[cardSetupIndex].cardSet;
+            }
+            else
+            {
+                var targetCardSettings = movementCardsSetupCollection.allSetups[cardSetupIndex].cardSet[cardIndex];
+                movementCardSettings = new List<MovementCardSettings> { targetCardSettings };
+            }
             return new CharacterMovementControllerSetup(gameCamera, movementCardSettings, tempCharacter, tilePlacer, gameHandler, timer);
         }
         
@@ -122,7 +131,22 @@ namespace LiftStudio
         private void InstantiateMovementCardsRPC(int actorNumber, int cardSetupIndex, int cardIndex)
         {
             var targetPlayerNickname = PhotonNetwork.CurrentRoom.Players[actorNumber].NickName;
+            if (PhotonNetwork.CurrentRoom.PlayerCount == 1)
+            {
+                var cardSet = movementCardsSetupCollection.allSetups[cardSetupIndex].cardSet;
+                foreach (var cardSettings in cardSet)
+                {
+                    InstantiateMovementCard(cardSettings, targetPlayerNickname);
+                }
+                return;
+            }
+
             var movementCardSettings = movementCardsSetupCollection.allSetups[cardSetupIndex].cardSet[cardIndex];
+            InstantiateMovementCard(movementCardSettings, targetPlayerNickname);
+        }
+
+        private void InstantiateMovementCard(MovementCardSettings movementCardSettings, string targetPlayerNickname)
+        {
             var spawnedCardContainer = Instantiate(movementCard, movementCardContainerParent);
             spawnedCardContainer.SetMovementCardSettings(targetPlayerNickname, movementCardSettings);
         }

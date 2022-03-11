@@ -15,7 +15,13 @@ MonoBehaviour:
   allSetups:
   - playerCount: 1
     cardSet:
-    - {fileID: 11400000, guid: 784ce25b557e9467fa59440009d4e42f, type: 2}
+    - {fileID: 11400000, guid: c0e5ae459f132e547b9cd778417232fd, type: 2}
+    - {fileID: 11400000, guid: fa88b604236f60c4c94ba8edf1fae045, type: 2}
+    - {fileID: 11400000, guid: 7780f838a54fb2a4b86983d17228aeee, type: 2}
+    - {fileID: 11400000, guid: 4b4fd259a72c9674193ddf2ecdda3043, type: 2}
+    - {fileID: 11400000, guid: 2cd57cf06b2516940a9d83ef94e53a41, type: 2}
+    - {fileID: 11400000, guid: 24af35945b095ae44af4cecff5889f09, type: 2}
+    - {fileID: 11400000, guid: 8814bce325d7baf4ca7aef0ffb6d1b7c, type: 2}
   - playerCount: 2
     cardSet:
     - {fileID: 11400000, guid: caa79115723ef2b45b5760da38b8111e, type: 2}
