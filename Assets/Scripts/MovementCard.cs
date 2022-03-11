@@ -1,4 +1,5 @@
-﻿using Photon.Pun;
+﻿using System.Collections;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 
@@ -7,6 +8,8 @@ namespace LiftStudio
     public class MovementCard : MonoBehaviour
     {
         [SerializeField] private TMP_Text cardOwnerText;
+        [SerializeField] private Transform abilityContainer;
+        [SerializeField] private Transform movementDirectionContainer;
         [SerializeField] private GameObject researchImage;
         [SerializeField] private GameObject elevatorImage;
         [SerializeField] private GameObject portalImage;
@@ -20,7 +23,7 @@ namespace LiftStudio
             
             foreach (var rotation in cardDirectionList)
             {
-                var spawnedCardArrow = Instantiate(movementDirectionPrefab, transform);
+                var spawnedCardArrow = Instantiate(movementDirectionPrefab, movementDirectionContainer);
                 spawnedCardArrow.rotation = Quaternion.AngleAxis(rotation, Vector3.forward);
             }
 
@@ -28,7 +31,7 @@ namespace LiftStudio
             elevatorImage.SetActive(cardSettings.canUseElevator);
             portalImage.SetActive(cardSettings.canUsePortal);
 
-            UpdateContainerActive(cardSettings);
+            UpdateContainerActive(cardSettings, cardDirectionList);
         }
 
         private void SetCardText(string cardOwner)
@@ -43,11 +46,13 @@ namespace LiftStudio
             cardOwnerText.text = cardOwner;
         }
         
-        private void UpdateContainerActive(MovementCardSettings cardSettings)
+        private void UpdateContainerActive(MovementCardSettings cardSettings, ICollection cardDirectionList)
         {
-            researchImage.SetActive(cardSettings.canUseResearch);
-            elevatorImage.SetActive(cardSettings.canUseElevator);
-            portalImage.SetActive(cardSettings.canUsePortal);
+            var hasAnyAbility = cardSettings.canUseElevator || cardSettings.canUsePortal || cardSettings.canUseResearch;
+            var hasAnyMovement = cardDirectionList.Count > 0;
+            
+            abilityContainer.gameObject.SetActive(hasAnyAbility);
+            movementDirectionContainer.gameObject.SetActive(hasAnyMovement);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace LiftStudio
         [SerializeField] private StartingTile startingTile;
         [SerializeField] private MovementCard movementCard;
         [SerializeField] private Transform startTilePositionTransform;
-        [SerializeField] private Transform movementCardContainer;
+        [SerializeField] private Transform movementCardContainerParent;
 
         public static GameSetup Instance;
 
@@ -147,7 +147,7 @@ namespace LiftStudio
 
         private void InstantiateMovementCard(MovementCardSettings movementCardSettings, string targetPlayerNickname)
         {
-            var spawnedCardContainer = Instantiate(movementCard, movementCardContainer);
+            var spawnedCardContainer = Instantiate(movementCard, movementCardContainerParent);
             spawnedCardContainer.SetMovementCardSettings(targetPlayerNickname, movementCardSettings);
         }
 

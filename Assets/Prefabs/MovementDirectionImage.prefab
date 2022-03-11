@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 6088949563030029636}
   - component: {fileID: 6503551867676022733}
   - component: {fileID: -7927380442069824695}
-  - component: {fileID: 807195893966833575}
   m_Layer: 5
   m_Name: MovementDirectionImage
   m_TagString: Untagged
@@ -37,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 40, y: 40}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6088949563030029636
 CanvasRenderer:
@@ -90,23 +89,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraRotatedEventChannel: {fileID: 11400000, guid: 791663b9611841446b6e83855614c92b, type: 2}
---- !u!114 &807195893966833575
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2547489903507411806}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: 40
-  m_PreferredHeight: 40
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: -1
-  m_LayoutPriority: 1

@@ -18,7 +18,8 @@ namespace LiftStudio
 
         private void Update()
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, _arrowNewRotation, Time.deltaTime * _rotationSpeed);
+            transform.rotation =
+                Quaternion.Lerp(transform.rotation, _arrowNewRotation, Time.deltaTime * _rotationSpeed);
         }
 
         private void OnCameraRotated(float rotationAmount, float rotationSpeed)
