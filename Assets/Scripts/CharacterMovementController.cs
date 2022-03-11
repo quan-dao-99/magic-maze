@@ -345,8 +345,7 @@ namespace LiftStudio
             var targetCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
             var targetTile = _tilePlacer.AllPlacedTiles[targetTileIndex];
             var targetGridCell = targetTile.Grid.GetGridCellObject(targetTilePosition);
-            if (targetGridCell.CharacterOnTop &&
-                targetGridCell.CharacterOnTop != targetCharacter) return;
+            if (targetGridCell.CharacterOnTop && targetGridCell.CharacterOnTop != targetCharacter) return;
 
             photonView.RPC("ConfirmPlaceCharacterRPC", RpcTarget.All, data);
         }
@@ -370,6 +369,7 @@ namespace LiftStudio
             _gameHandler.CharacterOnTileDictionary[targetCharacter] = targetGridCell.Tile;
             targetCharacter.transform.position = targetGridCell.CenterWorldPosition;
             _localPlayerController.ConfirmPlaceCharacter(senderUserId, targetCharacterType, targetGridCell);
+            _selectedCharacter = null;
         }
 
         [PunRPC]
