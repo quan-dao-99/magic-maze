@@ -84,7 +84,6 @@ namespace LiftStudio
 
         private void OnAllMovableGridCellsSet(List<GridCell> allMovableGridCells)
         {
-            Debug.Log($"Position: {_x}, {_y}. Contains: {allMovableGridCells.Contains(this)}");
             if (allMovableGridCells.Count == 0 || !allMovableGridCells.Contains(this))
             {
                 _highlighterHandler.OnDehighlighted();

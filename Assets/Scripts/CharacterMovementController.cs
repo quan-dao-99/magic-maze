@@ -27,6 +27,7 @@ namespace LiftStudio
         private Timer _timer;
 
         private Vector3 _mouseStartPosition;
+        private Vector3 _placementMouseStartPosition;
         private Character _selectedCharacter;
         private GridCell _startGridCell;
         private GridCell _targetGridCell;
@@ -123,21 +124,22 @@ namespace LiftStudio
             _plane.Raycast(ray, out var enter);
             var planeHitPoint = ray.GetPoint(enter);
             var mouseMoveDirection = planeHitPoint - _mouseStartPosition;
+            var placementMouseMoveDirection = planeHitPoint - _placementMouseStartPosition;
+            var targetPlacementPosition = _targetGridCell.CenterWorldPosition + MathUtils.FloorOrCeilToIntVector3(placementMouseMoveDirection);
             var targetPosition = _startGridCell.CenterWorldPosition + mouseMoveDirection;
 
             foreach (var placedTile in _tilePlacer.AllPlacedTiles)
             {
-                var targetGridCell = placedTile.Grid.GetGridCellObject(targetPosition);
+                var targetGridCell = placedTile.Grid.GetGridCellObject(targetPlacementPosition);
                 if (targetGridCell == null) continue;
-
                 if (targetGridCell.CharacterOnTop && targetGridCell != _startGridCell) return;
-
                 if (targetGridCell.Exits != null && !_gameHandler.HasCharactersBeenOnPickupCells) return;
 
                 SelectedCharacterPosition = targetPosition + _additionalFloatPosition;
+                _placementMouseStartPosition += targetGridCell.CenterWorldPosition - _targetGridCell.CenterWorldPosition;
                 _targetGridCell = targetGridCell;
-                _tempCharacter.position = _targetGridCell.CenterWorldPosition;
-                _tempCharacter.gameObject.SetActive(true);
+                _tempCharacter.position = targetGridCell.CenterWorldPosition;
+                break;
             }
         }
 
@@ -150,11 +152,15 @@ namespace LiftStudio
             if (_gameHandler.CharactersMoving[selectedCharacter.Type]) return;
 
             _plane.Raycast(ray, out var enter);
-            _mouseStartPosition = ray.GetPoint(enter);
+            var mouseStartPosition = ray.GetPoint(enter);
+            _mouseStartPosition = mouseStartPosition;
+            _placementMouseStartPosition = mouseStartPosition;
             _selectedCharacter = selectedCharacter;
+            _tempCharacter.gameObject.SetActive(true);
             _gameHandler.CharactersMoving[selectedCharacter.Type] = true;
             var boardTile = _gameHandler.CharacterOnTileDictionary[selectedCharacter];
             _startGridCell = boardTile.Grid.GetGridCellObject(SelectedCharacterPosition);
+            _targetGridCell = _startGridCell;
             TryGetAllPossibleTargetGridCells();
             SelectedCharacterPosition += _additionalFloatPosition;
             Cursor.SetCursor(holdCursor, cursorOffset, CursorMode.Auto);
