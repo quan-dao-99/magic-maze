@@ -35,7 +35,7 @@ namespace LiftStudio
 
         private Plane _plane = new Plane(Vector3.up, Vector3.zero);
 
-        private Vector3 _otherCharacterTargetPosition;
+        private Vector3? _otherCharacterTargetPosition;
         private readonly Queue<Vector3> _otherCharacterPositions = new Queue<Vector3>();
 
         private static GameSetup GameSetupInstance => GameSetup.Instance;
@@ -107,12 +107,15 @@ namespace LiftStudio
             if (!photonView.IsMine)
             {
                 if (!_gameHandler.CharactersMoving[_selectedCharacter.Type]) return;
-                if (SelectedCharacterPosition == _otherCharacterTargetPosition && _otherCharacterPositions.Count > 0)
+                if (SelectedCharacterPosition == _otherCharacterTargetPosition)
                 {
-                    _otherCharacterTargetPosition = _otherCharacterPositions.Dequeue();
+                    _otherCharacterTargetPosition = _otherCharacterPositions.Count == 0
+                        ? (Vector3?)null
+                        : _otherCharacterPositions.Dequeue();
                 }
+                if (_otherCharacterTargetPosition == null) return;
 
-                SelectedCharacterPosition = Vector3.MoveTowards(SelectedCharacterPosition, _otherCharacterTargetPosition, characterMoveSpeed * Time.deltaTime);
+                SelectedCharacterPosition = Vector3.MoveTowards(SelectedCharacterPosition, (Vector3)_otherCharacterTargetPosition, characterMoveSpeed * Time.deltaTime);
                 return;
             }
 
@@ -370,6 +373,8 @@ namespace LiftStudio
             targetCharacter.transform.position = targetGridCell.CenterWorldPosition;
             _localPlayerController.ConfirmPlaceCharacter(senderUserId, targetCharacterType, targetGridCell);
             _selectedCharacter = null;
+            _otherCharacterTargetPosition = null;
+            _otherCharacterPositions.Clear();
         }
 
         [PunRPC]
