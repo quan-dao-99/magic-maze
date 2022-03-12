@@ -107,11 +107,16 @@ namespace LiftStudio
             if (!photonView.IsMine)
             {
                 if (!_gameHandler.CharactersMoving[_selectedCharacter.Type]) return;
-                if (SelectedCharacterPosition == _otherCharacterTargetPosition && _otherCharacterPositions.Count > 0)
+                Debug.Log($"GAME: Position {_otherCharacterTargetPosition}");
+                Debug.Log($"GAME: Is null {_otherCharacterTargetPosition == null}");
+                if (CanGetNextPosition())
                 {
                     _otherCharacterTargetPosition = _otherCharacterPositions.Dequeue();
+                    Debug.Log($"GAME: Dequeued");
                 }
                 if (_otherCharacterTargetPosition == null) return;
+                Debug.Log($"GAME: Position {_otherCharacterTargetPosition}");
+                Debug.Log($"GAME: Is null {_otherCharacterTargetPosition == null}");
 
                 SelectedCharacterPosition = Vector3.MoveTowards(SelectedCharacterPosition, (Vector3)_otherCharacterTargetPosition, characterMoveSpeed * Time.deltaTime);
                 return;
@@ -142,6 +147,11 @@ namespace LiftStudio
                 _tempCharacter.position = targetGridCell.CenterWorldPosition;
                 break;
             }
+        }
+        
+        private bool CanGetNextPosition()
+        {
+            return (_otherCharacterTargetPosition == null || SelectedCharacterPosition == _otherCharacterTargetPosition) && _otherCharacterPositions.Count > 0;
         }
 
         private void HandleSelectingCharacter()
@@ -373,6 +383,7 @@ namespace LiftStudio
             _selectedCharacter = null;
             _otherCharacterTargetPosition = null;
             _otherCharacterPositions.Clear();
+            Debug.Log($"GAME: Other positions cleared");
         }
 
         [PunRPC]
