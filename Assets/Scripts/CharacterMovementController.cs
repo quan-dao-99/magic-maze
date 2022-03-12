@@ -107,16 +107,11 @@ namespace LiftStudio
             if (!photonView.IsMine)
             {
                 if (!_gameHandler.CharactersMoving[_selectedCharacter.Type]) return;
-                Debug.Log($"GAME: Position {_otherCharacterTargetPosition}");
-                Debug.Log($"GAME: Is null {_otherCharacterTargetPosition == null}");
                 if (CanGetNextPosition())
                 {
                     _otherCharacterTargetPosition = _otherCharacterPositions.Dequeue();
-                    Debug.Log($"GAME: Dequeued");
                 }
                 if (_otherCharacterTargetPosition == null) return;
-                Debug.Log($"GAME: Position {_otherCharacterTargetPosition}");
-                Debug.Log($"GAME: Is null {_otherCharacterTargetPosition == null}");
 
                 SelectedCharacterPosition = Vector3.MoveTowards(SelectedCharacterPosition, (Vector3)_otherCharacterTargetPosition, characterMoveSpeed * Time.deltaTime);
                 return;
