@@ -370,6 +370,7 @@ namespace LiftStudio
             targetCharacter.transform.position = targetGridCell.CenterWorldPosition;
             _localPlayerController.ConfirmPlaceCharacter(senderUserId, targetCharacterType, targetGridCell);
             _selectedCharacter = null;
+            _otherCharacterPositions.Clear();
         }
 
         [PunRPC]
