@@ -107,11 +107,9 @@ namespace LiftStudio
             if (!photonView.IsMine)
             {
                 if (!_gameHandler.CharactersMoving[_selectedCharacter.Type]) return;
-                if (SelectedCharacterPosition == _otherCharacterTargetPosition)
+                if (SelectedCharacterPosition == _otherCharacterTargetPosition && _otherCharacterPositions.Count > 0)
                 {
-                    _otherCharacterTargetPosition = _otherCharacterPositions.Count == 0
-                        ? (Vector3?)null
-                        : _otherCharacterPositions.Dequeue();
+                    _otherCharacterTargetPosition = _otherCharacterPositions.Dequeue();
                 }
                 if (_otherCharacterTargetPosition == null) return;
 
