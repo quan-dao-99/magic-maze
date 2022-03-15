@@ -309,6 +309,12 @@ namespace LiftStudio
             allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
         }
 
+        private void ClearAllPossibleTargetGridCells()
+        {
+            _allMovableGridCells.Clear();
+            allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
+        }
+
         private void ConfirmPlaceCharacter(string senderUserId, CharacterType placedCharacterType,
             GridCell targetGridCell)
         {
@@ -349,15 +355,16 @@ namespace LiftStudio
             selectedCharacterPosition += _additionalFloatPosition;
             targetCharacterTransform.position = selectedCharacterPosition;
         }
-        
+
         [PunRPC]
         private void CancelSelectedCharacterRPC(string senderId)
         {
             if (senderId != PhotonNetwork.LocalPlayer.UserId) return;
-            
+
             _selectedCharacter = null;
             _tempCharacter.gameObject.SetActive(false);
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
+            ClearAllPossibleTargetGridCells();
         }
 
         [PunRPC]
