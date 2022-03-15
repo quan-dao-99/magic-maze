@@ -170,8 +170,8 @@ namespace LiftStudio
             TryGetAllPossibleTargetGridCells();
             SelectedCharacterPosition += _additionalFloatPosition;
             Cursor.SetCursor(holdCursor, cursorOffset, CursorMode.Auto);
-            var content = new object[] { _selectedCharacter.Type };
-            photonView.RPC("SelectCharacterRPC", RpcTarget.Others, content);
+            photonView.RPC("TrySelectCharacterRPC", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.UserId, _selectedCharacter.Type);
+            photonView.RPC("SelectCharacterRPC", RpcTarget.Others, _selectedCharacter.Type);
         }
 
         private void HandlePlacingSelectedCharacter()
@@ -327,16 +327,37 @@ namespace LiftStudio
             _allMovableGridCells.Clear();
             allMovableGridCellsSetEventChannel.RaiseEvent(_allMovableGridCells);
         }
+        
+        [PunRPC]
+        private void TrySelectCharacterRPC(string senderId, CharacterType targetCharacterType)
+        {
+            if (_gameHandler.CharactersMoving[targetCharacterType])
+            {
+                photonView.RPC("CancelSelectedCharacterRPC", RpcTarget.Others, senderId);
+            }
+        }
 
         [PunRPC]
         private void SelectCharacterRPC(CharacterType targetCharacterType)
         {
+            if (_gameHandler.CharactersMoving[targetCharacterType]) return;
+
             _gameHandler.CharactersMoving[targetCharacterType] = true;
             var targetCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
             var targetCharacterTransform = targetCharacter.transform;
             var selectedCharacterPosition = targetCharacterTransform.position;
             selectedCharacterPosition += _additionalFloatPosition;
             targetCharacterTransform.position = selectedCharacterPosition;
+        }
+        
+        [PunRPC]
+        private void CancelSelectedCharacterRPC(string senderId)
+        {
+            if (senderId != PhotonNetwork.LocalPlayer.UserId) return;
+            
+            _selectedCharacter = null;
+            _tempCharacter.gameObject.SetActive(false);
+            Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
         }
 
         [PunRPC]
@@ -378,7 +399,6 @@ namespace LiftStudio
             _selectedCharacter = null;
             _otherCharacterTargetPosition = null;
             _otherCharacterPositions.Clear();
-            Debug.Log($"GAME: Other positions cleared");
         }
 
         [PunRPC]
