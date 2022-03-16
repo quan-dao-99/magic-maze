@@ -222,8 +222,9 @@ namespace LiftStudio
                 _selectedCharacter.Type, targetTileIndex, targetGridCell.CenterWorldPosition, startTileIndex,
                 _startGridCell.CenterWorldPosition, PhotonNetwork.LocalPlayer.UserId
             };
-            photonView.RPC("TryPlaceCharacterRPC", RpcTarget.MasterClient, content);
             Cursor.SetCursor(null, Vector2.zero, CursorMode.ForceSoftware);
+            photonView.RPC("TryPlaceCharacterRPC", RpcTarget.MasterClient, content);
+            photonView.RPC("ConfirmPlaceCharacterRPC", RpcTarget.All, content);
         }
 
         private void TakeCharacterOutOfBoard(Character targetCharacter)
@@ -379,9 +380,10 @@ namespace LiftStudio
             var targetCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
             var targetTile = _tilePlacer.AllPlacedTiles[targetTileIndex];
             var targetGridCell = targetTile.Grid.GetGridCellObject(targetTilePosition);
-            if (targetGridCell.CharacterOnTop && targetGridCell.CharacterOnTop != targetCharacter) return;
-
-            photonView.RPC("ConfirmPlaceCharacterRPC", RpcTarget.All, data);
+            if (targetGridCell.CharacterOnTop && targetGridCell.CharacterOnTop != targetCharacter)
+            {
+                photonView.RPC("CancelCharacterPlacementRPC", RpcTarget.All, data);
+            }
         }
 
         [PunRPC]
@@ -400,9 +402,30 @@ namespace LiftStudio
             _gameHandler.CharactersMoving[targetCharacterType] = false;
             startGridCell.ClearCharacter();
             targetGridCell.SetCharacter(targetCharacter);
-            _gameHandler.CharacterOnTileDictionary[targetCharacter] = targetGridCell.Tile;
+            _gameHandler.CharacterOnTileDictionary[targetCharacter] = targetTile;
             targetCharacter.transform.position = targetGridCell.CenterWorldPosition;
             _localPlayerController.ConfirmPlaceCharacter(senderUserId, targetCharacterType, targetGridCell);
+            _selectedCharacter = null;
+            _otherCharacterTargetPosition = null;
+            _otherCharacterPositions.Clear();
+        }
+        
+        [PunRPC]
+        private void CancelCharacterPlacementRPC(object[] data)
+        {
+            var targetCharacterType = (CharacterType)data[0];
+            if (!_gameHandler.CharactersMoving[targetCharacterType]) return;
+
+            var targetCharacter = _gameHandler.CharacterFromTypeDictionary[targetCharacterType];
+            var startTile = _tilePlacer.AllPlacedTiles[(int)data[3]];
+            var startGridCell = startTile.Grid.GetGridCellObject((Vector3)data[4]);
+            var senderUserId = (string)data[5];
+
+            _gameHandler.CharactersMoving[targetCharacterType] = false;
+            startGridCell.SetCharacter(targetCharacter);
+            _gameHandler.CharacterOnTileDictionary[targetCharacter] = startTile;
+            targetCharacter.transform.position = startGridCell.CenterWorldPosition;
+            _localPlayerController.ConfirmPlaceCharacter(senderUserId, targetCharacterType, startGridCell);
             _selectedCharacter = null;
             _otherCharacterTargetPosition = null;
             _otherCharacterPositions.Clear();
