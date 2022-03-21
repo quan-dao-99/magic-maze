@@ -1,13 +1,12 @@
-using System;
 using System.Collections.Generic;
+using LiftStudio.EventChannels;
+using LiftStudio.Pools;
 using UnityEngine;
 
 namespace LiftStudio
 {
     public class Tile : MonoBehaviour
     {
-        [SerializeField] private PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel;
-        [SerializeField] private Transform tileVisualTransform;
         [SerializeField] private List<PortalSetup> portals;
         [SerializeField] private List<Elevator> elevators;
         [SerializeField] private List<ResearchPoint> researchTiles;
@@ -15,20 +14,34 @@ namespace LiftStudio
         [SerializeField] private PickupSetup pickupSetup;
         [SerializeField] private HourglassSetup hourglassSetup;
 
+        [Space]
+        [SerializeField] private Transform tileVisualTransform;
+
+        [SerializeField] private AllMovableGridCellsSetEventChannel allMovableGridCellsSetEventChannel;
+        [SerializeField] private PickedUpAllItemsEventChannel pickedUpAllItemsEventChannel;
+        
         public CustomGrid<GridCell> Grid { get; private set; }
 
         private Transform OwnTransform => transform;
 
-        private const int Width = 4;
-        private const int Height = 4;
-        private const int CellSize = 1;
+        private int _width;
+        private int _height;
         private Vector3 _originPosition = Vector3.zero;
+        
+        private static GridCellHighlighterPool _gridCellHighlighterPool;
 
-        public void SetupGrid()
+        public void SetupGrid(int width, int height, int cellSize)
         {
+            SetGridCellHighlighterPool();
+
+            var halfWidth = (float) width / 2;
+            var halfHeight = (float) height / 2;
+            _width = width;
+            _height = height;
             _originPosition = tileVisualTransform.position +
-                              OwnTransform.rotation * tileVisualTransform.localRotation * new Vector3(-2, 0, -2);
-            Grid = new CustomGrid<GridCell>(OwnTransform, tileVisualTransform, _originPosition, Width, Height, CellSize,
+                              OwnTransform.rotation * tileVisualTransform.localRotation *
+                              new Vector3(-halfWidth, 0, -halfHeight);
+            Grid = new CustomGrid<GridCell>(OwnTransform, tileVisualTransform, _originPosition, width, height, cellSize,
                 (grid, x, y) =>
                 {
                     var portalSetup = portals.Find(portal => portal.gridPosition.x == x && portal.gridPosition.y == y);
@@ -59,20 +72,63 @@ namespace LiftStudio
 
                     var isPickupTile = pickupSetup.gridPosition.x == x && pickupSetup.gridPosition.y == y;
                     var pickup = isPickupTile
-                        ? new Pickup {targetCharacterType = pickupSetup.targetCharacterType}
+                        ? new Pickup {TargetCharacterType = pickupSetup.targetCharacterType}
                         : null;
                     var isHourglass = hourglassSetup.gridPosition.x == x && hourglassSetup.gridPosition.y == y;
                     var hourglass = isHourglass
                         ? new Hourglass(hourglassSetup.usedMarker, hourglassSetup.hourglassSpriteRenderer)
                         : null;
-                    return new GridCell(grid, x, y, targetPortal, targetElevator, targetResearchPoint, exitLists,
-                        pickup, hourglass, pickedUpAllItemsEventChannel, this);
+                    return new GridCell(this, grid, x, y, targetPortal, targetElevator, targetResearchPoint, exitLists,
+                        pickup, hourglass, pickedUpAllItemsEventChannel, allMovableGridCellsSetEventChannel,
+                        new GridCellHighlighterHandler(_gridCellHighlighterPool));
                 });
+        }
+
+        private static void SetGridCellHighlighterPool()
+        {
+            if (_gridCellHighlighterPool != null) return;
+            
+            _gridCellHighlighterPool = FindObjectOfType<GridCellHighlighterPool>();
+        }
+
+        public GridCell GetTargetCharacterPortalGridCell(CharacterType targetCharacterType)
+        {
+            for (var w = 0; w < _width; w++)
+            {
+                for (var h = 0; h < _height; h++)
+                {
+                    var gridCell = Grid.GetGridCellObject(w, h);
+                    if (gridCell.Portal == null) continue;
+                    
+                    if (gridCell.Portal.targetCharacterType != targetCharacterType) continue;
+
+                    return gridCell;
+                }
+            }
+            return null;
+        }
+        
+        public GridCell GetOtherElevatorEndGridCell(GridCell initialGridCell)
+        {
+            for (var w = 0; w < _width; w++)
+            {
+                for (var h = 0; h < _height; h++)
+                {
+                    var gridCell = Grid.GetGridCellObject(w, h);
+                    if (gridCell.Elevator == null) continue;
+                    if (gridCell == initialGridCell) continue;
+                    if (gridCell.Elevator != initialGridCell.Elevator) continue;
+
+                    return gridCell;
+                }
+            }
+            return null;
         }
 
         private void OnDestroy()
         {
             Grid?.Dispose();
+            _gridCellHighlighterPool = null;
         }
     }
 }

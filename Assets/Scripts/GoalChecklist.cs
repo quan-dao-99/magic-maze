@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using LiftStudio.EventChannels;
+using TMPro;
 using UnityEngine;
 
 namespace LiftStudio

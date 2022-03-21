@@ -3,12 +3,13 @@ using UnityEngine;
 
 namespace LiftStudio
 {
-    [CreateAssetMenu(fileName = "MovementCardSettings", menuName = "Move Card Settings")]
+    [CreateAssetMenu(fileName = "MovementCardSettings", menuName = "Movement Card Settings")]
     public class MovementCardSettings : ScriptableObject
     {
         [EnumFlag] public MovementDirection movementDirection;
         public bool canUseElevator;
         public bool canUsePortal;
+        public bool canUseResearch;
 
         public List<Vector3> GetAllPossibleMovementVector()
         {
@@ -34,6 +35,32 @@ namespace LiftStudio
             }
 
             return allMovementVectors;
+        }
+
+        public List<float> GetCardArrowRotation()
+        {
+            var allCardArrowDirection = new List<float>();
+            if (movementDirection.HasDirectionFlag(MovementDirection.Right))
+            {
+                allCardArrowDirection.Add(-90f);
+            }
+
+            if (movementDirection.HasDirectionFlag(MovementDirection.Down))
+            {
+                allCardArrowDirection.Add(180f);
+            }
+
+            if (movementDirection.HasDirectionFlag(MovementDirection.Left))
+            {
+                allCardArrowDirection.Add(90f);
+            }
+
+            if (movementDirection.HasDirectionFlag(MovementDirection.Up))
+            {
+                allCardArrowDirection.Add(0f);
+            }
+            
+            return allCardArrowDirection;
         }
     }
 }

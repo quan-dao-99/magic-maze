@@ -12,6 +12,6 @@ namespace LiftStudio
 
     public class Pickup
     {
-        public CharacterType targetCharacterType;
+        public CharacterType TargetCharacterType;
     }
 }

@@ -14,12 +14,12 @@ namespace LiftStudio
             _runTimeCharacterSpawnPositions = new List<Transform>(characterSpawnPositions);
         }
 
-        public Transform GetRandomCharacterSpawnPosition()
+        public Vector3 GetRandomCharacterSpawnPosition()
         {
             var randomIndex = Random.Range(0, _runTimeCharacterSpawnPositions.Count);
             var targetTransform = _runTimeCharacterSpawnPositions[randomIndex];
             _runTimeCharacterSpawnPositions.RemoveAt(randomIndex);
-            return targetTransform;
+            return targetTransform.position;
         }
     }
 }

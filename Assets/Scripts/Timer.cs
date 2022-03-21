@@ -1,3 +1,4 @@
+using LiftStudio.EventChannels;
 using UnityEngine;
 
 namespace LiftStudio
@@ -9,22 +10,22 @@ namespace LiftStudio
 
         [SerializeField] private GameEndedEventChannel gameEndedEventChannel;
 
-        private float _currentTime;
+        public float CurrentTime { get; private set; }
 
         private void Awake()
         {
-            _currentTime = maxTime;
-            timerUI.UpdateTimer(_currentTime / maxTime);
+            CurrentTime = maxTime;
+            timerUI.UpdateTimer(CurrentTime / maxTime);
 
             gameEndedEventChannel.GameEnded += OnGameEnded;
         }
 
         private void Update()
         {
-            _currentTime = Mathf.Clamp(_currentTime - Time.deltaTime, 0f, maxTime);
-            timerUI.UpdateTimer(_currentTime / maxTime);
+            CurrentTime = Mathf.Clamp(CurrentTime - Time.deltaTime, 0f, maxTime);
+            timerUI.UpdateTimer(CurrentTime / maxTime);
 
-            if (_currentTime == 0)
+            if (CurrentTime == 0)
             {
                 gameEndedEventChannel.RaiseEvent();
             }
@@ -32,8 +33,19 @@ namespace LiftStudio
 
         public void FlipHourglassTimer()
         {
-            _currentTime = maxTime - _currentTime;
-            timerUI.UpdateTimer(_currentTime / maxTime);
+            CurrentTime = maxTime - CurrentTime;
+            FlipHourglassTimerUI();
+        }
+
+        public void FlipHourglassTimer(float flippedTime)
+        {
+            CurrentTime = maxTime - flippedTime;
+            FlipHourglassTimerUI();
+        }
+        
+        private void FlipHourglassTimerUI()
+        {
+            timerUI.UpdateTimer(CurrentTime / maxTime);
             timerUI.FlipHourglassTimer();
         }
 

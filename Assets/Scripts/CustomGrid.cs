@@ -116,7 +116,7 @@ namespace LiftStudio
             return (x, y);
         }
 
-        private T GetGridCellObject(int x, int y)
+        public T GetGridCellObject(int x, int y)
         {
             if (x < 0 || y < 0 || x >= _width || y >= _height) return default(T);
 
