@@ -16,13 +16,12 @@ namespace LiftStudio
         [SerializeField] private float normalSpeed;
         [SerializeField] private float fastSpeed;
         [SerializeField] private float movementTime;
-        [SerializeField] private float rotateTime;
         [SerializeField] private float rotationAmount;
 
         private float _movementSpeed;
         private Vector3 _newPosition;
-        private Quaternion _newRotation;
         private Vector3 _newZoom;
+        private float _cameraVerticalAngle;
 
         private Bounds ColliderBounds => limitCollider.bounds;
         private Transform OwnTransform => transform;
@@ -31,8 +30,8 @@ namespace LiftStudio
         private void Awake()
         {
             _newPosition = OwnTransform.position;
-            _newRotation = OwnTransform.rotation;
             _newZoom = virtualCamera.transform.position;
+            _cameraVerticalAngle = Quaternion.Angle(VirtualCameraTransform.localRotation, Quaternion.identity);
 
             gameEndedEventChannel.GameEnded += OnGameEnded;
         }
@@ -51,7 +50,6 @@ namespace LiftStudio
             HandleCameraRotation();
 
             OwnTransform.position = Vector3.Lerp(OwnTransform.position, _newPosition, Time.deltaTime * movementTime);
-            OwnTransform.rotation = Quaternion.Lerp(OwnTransform.rotation, _newRotation, Time.deltaTime * rotateTime);
         }
 
         private void HandleCameraMovement()
@@ -82,16 +80,17 @@ namespace LiftStudio
 
         private void HandleCameraRotation()
         {
-            if (Input.GetKey(KeyCode.Q))
-            {
-                _newRotation *= Quaternion.Euler(Vector3.up * rotationAmount);
-                cameraRotatedEventChannel.RaiseEvent(rotationAmount, rotateTime);
-            }
-            else if (Input.GetKey(KeyCode.E))
-            {
-                _newRotation *= Quaternion.Euler(Vector3.up * -rotationAmount);
-                cameraRotatedEventChannel.RaiseEvent(-rotationAmount, rotateTime);
-            }
+            if (!Input.GetMouseButton(1)) return;
+
+            var mouseHorizontal = Input.GetAxis("Mouse X");
+            var mouseVertical = Input.GetAxis("Mouse Y");
+            OwnTransform.Rotate(new Vector3(0f, mouseHorizontal * rotationAmount, 0f), Space.Self);
+            
+            _cameraVerticalAngle += mouseVertical * rotationAmount;
+
+            _cameraVerticalAngle = Mathf.Clamp(_cameraVerticalAngle, 30, 89f);
+
+            VirtualCameraTransform.localEulerAngles = new Vector3(_cameraVerticalAngle, 0, 0);
         }
 
         private void HandleCameraZoom()
