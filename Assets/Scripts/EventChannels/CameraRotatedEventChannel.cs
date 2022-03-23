@@ -6,11 +6,15 @@ namespace LiftStudio.EventChannels
     [CreateAssetMenu(fileName = "CameraRotatedEventChannel", menuName = "Events/CameraRotatedEventChannel")]
     public class CameraRotatedEventChannel : ScriptableObject
     {
-        public event Action<float, float> CameraRotated;
+        [SerializeField] private int rotationThreshold;
 
-        public void RaiseEvent(float rotationAmount, float rotateTime)
+        public event Action<int> CameraRotated;
+
+        public void RaiseEvent(int rotationAmount)
         {
-            CameraRotated?.Invoke(rotationAmount, rotateTime);
+            if (rotationAmount % rotationThreshold != 0) return;
+            
+            CameraRotated?.Invoke(rotationAmount);
         }
     }
 }

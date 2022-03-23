@@ -12,3 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 236833449ee648f887fe2c6d077ce35b, type: 3}
   m_Name: CameraRotatedEventChannel
   m_EditorClassIdentifier: 
+  rotationThreshold: 90

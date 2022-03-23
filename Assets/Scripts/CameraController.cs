@@ -22,6 +22,7 @@ namespace LiftStudio
         private Vector3 _newPosition;
         private Vector3 _newZoom;
         private float _cameraVerticalAngle;
+        private float _cameraHorizontalAngle;
 
         private Bounds ColliderBounds => limitCollider.bounds;
         private Transform OwnTransform => transform;
@@ -84,12 +85,14 @@ namespace LiftStudio
 
             var mouseHorizontal = Input.GetAxis("Mouse X");
             var mouseVertical = Input.GetAxis("Mouse Y");
-            OwnTransform.Rotate(new Vector3(0f, mouseHorizontal * rotationAmount, 0f), Space.Self);
-            
+
+            var rotation = mouseHorizontal * rotationAmount;
+            _cameraHorizontalAngle += rotation;
+            OwnTransform.Rotate(new Vector3(0f, rotation, 0f), Space.Self);
+            cameraRotatedEventChannel.RaiseEvent((int) _cameraHorizontalAngle);
+
             _cameraVerticalAngle += mouseVertical * rotationAmount;
-
             _cameraVerticalAngle = Mathf.Clamp(_cameraVerticalAngle, 30, 89f);
-
             VirtualCameraTransform.localEulerAngles = new Vector3(_cameraVerticalAngle, 0, 0);
         }
 

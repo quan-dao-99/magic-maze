@@ -7,24 +7,19 @@ namespace LiftStudio
     {
         [SerializeField] private CameraRotatedEventChannel cameraRotatedEventChannel;
 
-        private Quaternion _arrowNewRotation;
-        private float _rotationSpeed;
+        private int _lastRotationAmount;
 
         private void Awake()
         {
             cameraRotatedEventChannel.CameraRotated += OnCameraRotated;
-            _arrowNewRotation = transform.rotation;
         }
 
-        private void Update()
+        private void OnCameraRotated(int rotationAmount)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, _arrowNewRotation, Time.deltaTime * _rotationSpeed);
-        }
+            if (_lastRotationAmount == rotationAmount) return;
 
-        private void OnCameraRotated(float rotationAmount, float rotationSpeed)
-        {
-            _arrowNewRotation *= Quaternion.Euler(Vector3.forward * rotationAmount);
-            _rotationSpeed = rotationSpeed;
+            transform.Rotate(new Vector3(0f, 0f, rotationAmount - _lastRotationAmount), Space.Self);
+            _lastRotationAmount = rotationAmount;
         }
 
         private void OnDestroy()
