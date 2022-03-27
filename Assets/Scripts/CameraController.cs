@@ -101,14 +101,12 @@ namespace LiftStudio
             if (Input.mouseScrollDelta.y == 0f) return;
 
             var scrollDirection = (int)Mathf.Sign(Input.mouseScrollDelta.y);
-            var distanceFromBase = (_newZoom - transform.position).sqrMagnitude;
+            var newZoomPosition = VirtualCameraTransform.position + VirtualCameraTransform.forward * scrollDirection;
+            newZoomPosition.y = Mathf.Clamp(newZoomPosition.y, 2f, 10f);
+            Debug.Log($"GAME: New zoom position {newZoomPosition}");
+            if (Mathf.Approximately(newZoomPosition.y, 2f) || Mathf.Approximately(newZoomPosition.y, 10f)) return;
 
-            if (distanceFromBase <= 10f && scrollDirection == 1) return;
-            if (distanceFromBase >= 250f && scrollDirection == -1) return;
-
-            _newZoom = VirtualCameraTransform.position;
-            _newZoom += VirtualCameraTransform.forward * scrollDirection;
-            VirtualCameraTransform.position = _newZoom;
+            VirtualCameraTransform.position = newZoomPosition;
         }
 
         private void OnGameEnded()

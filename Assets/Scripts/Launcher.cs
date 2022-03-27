@@ -24,9 +24,7 @@ namespace LiftStudio
         [SerializeField] private Transform playerInfosContainer;
 
         private readonly Dictionary<string, RoomListItem> _cachedRoomList = new Dictionary<string, RoomListItem>();
-
-        private readonly Dictionary<string, PlayerListItem>
-            _cachedPlayerList = new Dictionary<string, PlayerListItem>();
+        private readonly Dictionary<string, PlayerListItem> _cachedPlayerList = new Dictionary<string, PlayerListItem>();
 
         private const string GameVersion = "1";
         private bool _isConnecting;
