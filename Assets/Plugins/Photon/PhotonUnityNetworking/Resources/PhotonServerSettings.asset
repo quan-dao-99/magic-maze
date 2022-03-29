@@ -16,10 +16,10 @@ MonoBehaviour:
     AppIdRealtime: 2f276d9d-b15f-49b7-8a4e-356384bd867b
     AppIdFusion: 
     AppIdChat: 
-    AppIdVoice: 
-    AppVersion: 1
+    AppIdVoice: 4ed49a0e-f414-4f1f-a523-f1c20c16af7c
+    AppVersion: 
     UseNameServer: 1
-    FixedRegion: ru
+    FixedRegion: 
     Server: 
     Port: 0
     ProxyServer: 
@@ -28,44 +28,36 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: ru
-  PunLogging: 2
+  DevRegion: eu
+  PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
   StartInOfflineMode: 0
   RpcList:
+  - CancelCharacterPlacementRPC
+  - CancelSelectedCharacterRPC
   - ClickRpc
-  - DestroyRpc
-  - DestroySpaceship
-  - Fire
-  - RespawnSpaceship
-  - ConfirmPlaceCharacter
-  - TryPlaceCharacter
-  - SelectCharacter
-  - SetupPlayers
-  - SetupTileStacks
-  - ConfirmAllCharactersBeenOnPickupCells
-  - ConfirmCharacterResearch
-  - NotifyCharacterPlacedOnPickupCell
-  - TakeCharacterOutOfBoardRPC
-  - TryTakeNewTile
   - ConfirmAllCharactersBeenOnPickupCellsRPC
   - ConfirmCharacterResearchRPC
   - ConfirmPlaceCharacterRPC
+  - DestroyRpc
+  - DestroySpaceship
+  - Fire
   - FlipHourglassRPC
+  - GetMovementCardSettingsRPC
+  - InstantiateMovementCardsRPC
   - NotifyCharacterPlacedOnPickupCellRPC
+  - ReceivedMovementCardSettingsRPC
+  - RespawnSpaceship
   - SelectCharacterRPC
   - SetupPlayersRPC
   - SetupTileStacksRPC
+  - TakeCharacterOutOfBoardRPC
   - TryPlaceCharacterRPC
-  - TryTakeNewTileRPC
-  - GetMovementCardSettingsRPC
-  - ReceivedMovementCardSettingsRPC
-  - InstantiateMovementCards
-  - InstantiateMovementCardsRPC
-  - CancelCharacterPlacementRPC
-  - CancelSelectedCharacterRPC
   - TrySelectCharacterRPC
+  - TryTakeNewTileRPC
+  - CantHearYou
+  - HeresWhy
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
