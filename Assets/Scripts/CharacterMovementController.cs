@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using LiftStudio.EventChannels;
 using Photon.Pun;
+using Photon.Voice.PUN;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -172,6 +173,7 @@ namespace LiftStudio
             Cursor.SetCursor(holdCursor, cursorOffset, CursorMode.Auto);
             photonView.RPC("TrySelectCharacterRPC", RpcTarget.MasterClient, PhotonNetwork.LocalPlayer.UserId, _selectedCharacter.Type);
             photonView.RPC("SelectCharacterRPC", RpcTarget.Others, _selectedCharacter.Type);
+            photonView.RPC("DisableVoiceRPC", RpcTarget.All);
         }
 
         private void HandlePlacingSelectedCharacter()
@@ -203,9 +205,10 @@ namespace LiftStudio
                     _tilePlacer.AllPlacedTiles.IndexOf(_targetGridCell.Tile),
                     _targetGridCell.CenterWorldPosition, _timer.CurrentTime
                 };
-                photonView.RPC("FlipHourglassRPC", RpcTarget.Others, content);
+                photonView.RPC("UseHourglassRPC", RpcTarget.Others, content);
                 _targetGridCell.UseHourglass();
                 _timer.FlipHourglassTimer();
+                PhotonVoiceNetwork.Instance.PrimaryRecorder.TransmitEnabled = true;
             }
 
             MoveCharacterToTargetPosition(_targetGridCell);
@@ -447,12 +450,19 @@ namespace LiftStudio
         }
 
         [PunRPC]
-        private void FlipHourglassRPC(int tileIndex, Vector3 gridCellPosition, float senderTime)
+        private void UseHourglassRPC(int tileIndex, Vector3 gridCellPosition, float senderTime)
         {
             var targetTile = _tilePlacer.AllPlacedTiles[tileIndex];
             var targetGridCell = targetTile.Grid.GetGridCellObject(gridCellPosition);
             targetGridCell.UseHourglass();
             _timer.FlipHourglassTimer(senderTime);
+            PhotonVoiceNetwork.Instance.PrimaryRecorder.TransmitEnabled = true;
+        }
+        
+        [PunRPC]
+        private void DisableVoiceRPC()
+        {
+            PhotonVoiceNetwork.Instance.PrimaryRecorder.TransmitEnabled = false;
         }
 
         private void OnGameEnded()

@@ -43,7 +43,6 @@ MonoBehaviour:
   - DestroyRpc
   - DestroySpaceship
   - Fire
-  - FlipHourglassRPC
   - GetMovementCardSettingsRPC
   - InstantiateMovementCardsRPC
   - NotifyCharacterPlacedOnPickupCellRPC
@@ -58,6 +57,8 @@ MonoBehaviour:
   - TryTakeNewTileRPC
   - CantHearYou
   - HeresWhy
+  - UseHourglassRPC
+  - DisableVoiceRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
